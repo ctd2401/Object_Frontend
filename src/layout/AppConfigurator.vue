@@ -77,7 +77,11 @@ const surfaces = ref([
   }
 ]);
 
-function getPresetExt() {
+// onMounted(() => {
+//   updateColors('primary', { name: 'sky', palette: { 50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e', 950: '#082f49' } });
+// });
+
+const getPresetExt = () => {
   const color = primaryColors.value.find((c) => c.name === layoutConfig.primary);
 
   if (color.name === 'noir') {
@@ -165,9 +169,9 @@ function getPresetExt() {
       }
     };
   }
-}
+};
 
-function updateColors(type, color) {
+const updateColors = (type, color) => {
   if (type === 'primary') {
     layoutConfig.primary = color.name;
   } else if (type === 'surface') {
@@ -175,27 +179,27 @@ function updateColors(type, color) {
   }
 
   applyTheme(type, color);
-}
+};
 
-function applyTheme(type, color) {
+const applyTheme = (type, color) => {
   if (type === 'primary') {
     updatePreset(getPresetExt());
   } else if (type === 'surface') {
     updateSurfacePalette(color.palette);
   }
-}
+};
 
-function onPresetChange() {
+const onPresetChange = () => {
   layoutConfig.preset = preset.value;
   const presetValue = presets[preset.value];
   const surfacePalette = surfaces.value.find((s) => s.name === layoutConfig.surface)?.palette;
 
   $t().preset(presetValue).preset(getPresetExt()).surfacePalette(surfacePalette).use({ useDefaultOptions: true });
-}
+};
 
-function onMenuModeChange() {
+const onMenuModeChange = () => {
   layoutConfig.menuMode = menuMode.value;
-}
+};
 </script>
 
 <template>

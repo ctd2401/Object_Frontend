@@ -100,7 +100,7 @@ const router = createRouter({
           component: () => import('@/views/pages/Crud.vue')
         },
         {
-          path: '/documentation',
+          path: '/pages/documentation',
           name: 'documentation',
           component: () => import('@/views/pages/Documentation.vue')
         }
