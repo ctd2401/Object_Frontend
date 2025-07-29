@@ -1,5 +1,6 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
+import { storeRouter } from './store.router';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -48,7 +49,6 @@ const router = createRouter({
           name: 'panel',
           component: () => import('@/views/uikit/PanelsDoc.vue')
         },
-
         {
           path: '/uikit/overlay',
           name: 'overlay',
@@ -103,7 +103,8 @@ const router = createRouter({
           path: '/pages/documentation',
           name: 'documentation',
           component: () => import('@/views/pages/Documentation.vue')
-        }
+        },
+        ...storeRouter
       ]
     },
     {
