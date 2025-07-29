@@ -168,8 +168,21 @@ const model = ref([
       {
         label: 'List Store',
         icon: 'pi pi-fw pi-shop',
-        to: '/store'
-      }
+        to: '/store',
+        startWith: '/store/' // highlight khi path bắt đầu băng key này
+      },
+      {
+        label: 'List Product',
+        icon: 'pi pi-fw pi-database',
+        to: '/product',
+        startWith: '/product/'
+      },
+      {
+        label: 'List Category',
+        icon: 'pi pi-fw pi-list',
+        to: '/category',
+        startWith: '/category/'
+      },
     ]
   },
   {

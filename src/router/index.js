@@ -1,6 +1,8 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { uikitRouter } from './uikit.router';
+import { storeRouter } from './store.router';
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -35,15 +37,11 @@ const router = createRouter({
           component: () => import('@/views/my-account/ListCustomer.vue')
         },
         {
-          path: '/store',
-          name: 'ListStore',
-          component: () => import('@/views/my-account/ListStore.vue')
-        },
-        {
           path: '/banner',
           name: 'Banner',
           component: () => import('@/views/my-account/Banner.vue')
         },
+        ...storeRouter
       ]
     },
     {

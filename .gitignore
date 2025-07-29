@@ -10,5 +10,6 @@ dist
 .DS_Store
 .idea
 .eslintcache
+package-lock.json
 api-generator/typedoc.json
 **/.DS_Store
