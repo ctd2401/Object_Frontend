@@ -1,5 +1,7 @@
+import service from '@/service';
 import { defineStore } from "pinia";
 import apiClient from "../api/axiosClient";
+
 export const useAuthStore = defineStore("auth",{
   state: () =>({
     user: null,
@@ -16,7 +18,8 @@ export const useAuthStore = defineStore("auth",{
   actions:{
     async login(username, password){
       try{
-        const res = await apiClient.post("auth/login", {username, password});
+        const res = await service.auth.login({username, password})
+        // const res = await apiClient.post("auth/login", {username, password});
         this.token = res.data.accessToken;
         localStorage.setItem("accessToken", this.token);
         const profile = await apiClient.get("accounts");

@@ -1,3 +1,4 @@
+import AuthService from './AuthService';
 import CountryService from './CountryService';
 import CustomerService from './CustomerService';
 import NodeService from './NodeService';
@@ -6,6 +7,7 @@ import ProductService from './ProductService';
 import StoreService from './StoreService';
 
 export const BaseService = {
+  auth: AuthService,
   country: CountryService,
   store: StoreService,
   customer: CustomerService,
