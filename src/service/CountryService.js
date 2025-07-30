@@ -250,3 +250,6 @@ export const CountryService = {
     return Promise.resolve(this.getData());
   }
 };
+
+
+export default CountryService
