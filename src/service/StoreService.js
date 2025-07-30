@@ -4,17 +4,25 @@ export const StoreService = {
   },
 
   getStores() {
-    return Promise.resolve(this.getData());
+    return Promise.resolve({
+      success: true,
+      data: this.getData()
+    });
   },
 
   getStore(id) {
     const result = data.find((e) => e.id === id);
     return new Promise((resolve, reject) => {
-      resolve(result);
+      resolve({
+        success: true,
+        data: result
+      });
       if (!result) reject('Không có dữ liệu');
     });
   }
 };
+
+export default StoreService;
 
 const today = new Date();
 const setTimeISO = (hour, minute = 0) => {
@@ -24,9 +32,9 @@ const setTimeISO = (hour, minute = 0) => {
 };
 
 const shift_config = [
-  { name: 'Sáng', code: 'S', start: setTimeISO(7), end: setTimeISO(12) },
-  { name: 'Chiều', code: 'C', start: setTimeISO(12), end: setTimeISO(17) },
-  { name: 'Tối', code: 'T', start: setTimeISO(17), end: setTimeISO(23) }
+  { name: 'Sáng', code: 'S', start: new Date(setTimeISO(7)), end: new Date(setTimeISO(12)) },
+  { name: 'Chiều', code: 'C', start: new Date(setTimeISO(12)), end: new Date(setTimeISO(17)) },
+  { name: 'Tối', code: 'T', start: new Date(setTimeISO(17)), end: new Date(setTimeISO(23)) }
 ];
 
 const data = [

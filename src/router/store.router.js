@@ -9,4 +9,9 @@ export const storeRouter = [
     name: 'store-detail',
     component: () => import('@/views/store/StoreDetail.vue')
   },
+  {
+    path: '/store/create',
+    name: 'store-create',
+    component: () => import('@/views/store/StoreDetail.vue')
+  },
 ];

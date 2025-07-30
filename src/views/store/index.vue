@@ -1,14 +1,15 @@
 <script setup>
-import { StoreService } from '@/service/StoreService';
+import { useStoreManageStore } from '@/stores/store';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 onMounted(() => {
-  StoreService.getStores().then((data) => (stores.value = data));
+  getData();
 });
 
+const useStore = useStoreManageStore();
 const router = useRouter();
 const toast = useToast();
 const dt = ref();
@@ -28,12 +29,14 @@ const statuses = ref([
   { label: 'OUTOFSTOCK', value: 'outofstock' }
 ]);
 
-
-function openNew() {
-  store.value = {};
-  submitted.value = false;
-  storeDialog.value = true;
-}
+const getData = async () => {
+  const res = await useStore.getStores();
+  if (res.success) {
+    stores.value = res.data;
+  } else {
+    toast.add({ severity: 'error', summary: res?.message, detail: res?.error, life: 3000 });
+  }
+};
 
 function hideDialog() {
   storeDialog.value = false;
@@ -125,7 +128,7 @@ const onRowClick = ({ data }) => {
     <div class="card">
       <Toolbar class="mb-6">
         <template #start>
-          <Button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" @click="openNew" />
+          <Button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" @click="$router.push('/store/create')" />
           <Button label="Delete" icon="pi pi-trash" severity="secondary" @click="confirmDeleteSelected" :disabled="!selectedStores || !selectedStores.length" />
         </template>
 

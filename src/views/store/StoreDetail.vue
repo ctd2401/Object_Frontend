@@ -1,18 +1,39 @@
 <script setup>
-import { StoreService } from '@/service/StoreService';
-import { onMounted, ref } from 'vue';
+import { useToast } from 'primevue/usetoast';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import StoreForm from '@/components/store/StoreForm.vue';
+import { useStoreManageStore } from '@/stores/store';
 
 onMounted(() => {
-  StoreService.getStore(Number(route.params.id)).then((data) => (store.value = data));
+  getData();
 });
 
+const useStore = useStoreManageStore();
 const route = useRoute();
-const store = ref({});
+const toast = useToast();
+const store = ref({
+  store_code: '',
+  store_name: '',
+  address: '',
+  phone_number: '',
+  status: true,
+  logo: '',
+  shift_config: [],
+  extra_data: {}
+});
 const breadcrumbHome = ref({ icon: 'pi pi-home', route: '/' });
-const breadcrumbItems = ref([{ label: 'Danh sách cửa hàng', route: '/store' }, { label: 'Chi tiết' }]);
+const breadcrumbItems = computed(() => [{ label: 'Danh sách cửa hàng', route: '/store' }, { label: isEdit.value ? 'Chi tiết' : 'Tạo cửa hàng' }]);
+
+const isEdit = computed(() => !!route?.params?.id);
+
+const getData = async () => {
+  if (!isEdit.value) return;
+  const res = await useStore.getDetailStore(Number(route.params.id));
+  if (res.success) store.value = res.data;
+  else toast.add({ severity: 'error', summary: res?.message, detail: res?.error, life: 3000 });
+};
 </script>
 
 <template>
@@ -36,7 +57,8 @@ const breadcrumbItems = ref([{ label: 'Danh sách cửa hàng', route: '/store' 
       <Button label="Lưu lại" raised />
     </div>
 
-    <store-form v-model="store" />
+    <store-form v-model="store" :is-edit="isEdit" />
+
+    <Toast />
   </div>
 </template>
-
