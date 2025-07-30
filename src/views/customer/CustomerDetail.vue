@@ -1,18 +1,18 @@
 <script setup>
-import { StoreService } from '@/service/StoreService';
+import { CustomersService } from '@/service/CustomersService';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-import StoreForm from '@/components/store/StoreForm.vue';
+import CustomerForm from '@/components/customer/CustomerForm.vue';
 
 onMounted(() => {
-  StoreService.getStore(Number(route.params.id)).then((data) => (store.value = data));
+  CustomersService.getCustomer(Number(route.params.id)).then((data) => (customer.value = data));
 });
 
 const route = useRoute();
-const store = ref({});
+const customer = ref({});
 const breadcrumbHome = ref({ icon: 'pi pi-home', route: '/' });
-const breadcrumbItems = ref([{ label: 'Danh sách cửa hàng', route: '/store' }, { label: 'Chi tiết' }]);
+const breadcrumbItems = ref([{ label: 'Danh sách khách hàng', route: '/customer' }, { label: 'Chi tiết' }]);
 </script>
 
 <template>
@@ -36,7 +36,7 @@ const breadcrumbItems = ref([{ label: 'Danh sách cửa hàng', route: '/store' 
       <Button label="Lưu lại" raised />
     </div>
 
-    <store-form v-model="store" />
+    <customer-form v-model="customer" />
   </div>
 </template>
 

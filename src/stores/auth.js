@@ -19,6 +19,7 @@ export const useAuthStore = defineStore("auth",{
         const res = await apiClient.post("auth/login", {username, password});
         this.token = res.data.accessToken;
         localStorage.setItem("accessToken", this.token);
+        
         const profile = await apiClient.get("accounts");
         const userData = profile.data.results.find((u) => u.username === username);
         // Kiểm tra nếu không tìm thấy userData

@@ -9,27 +9,27 @@ const options = ref(['list', 'grid']);
 const layout = ref('list');
 
 onMounted(() => {
-    ProductService.getProductsSmall().then((data) => {
-        products.value = data.slice(0, 6);
-        picklistProducts.value = [data, []];
-        orderlistProducts.value = data;
-    });
+  ProductService.getProductsSmall().then((data) => {
+    products.value = data.slice(0, 6);
+    picklistProducts.value = [data, []];
+    orderlistProducts.value = data;
+  });
 });
 
 function getSeverity(product) {
-    switch (product.inventoryStatus) {
-        case 'INSTOCK':
-            return 'success';
+  switch (product.inventoryStatus) {
+    case 'INSTOCK':
+      return 'success';
 
-        case 'LOWSTOCK':
-            return 'warning';
+    case 'LOWSTOCK':
+      return 'warning';
 
-        case 'OUTOFSTOCK':
-            return 'danger';
+    case 'OUTOFSTOCK':
+      return 'danger';
 
-        default:
-            return null;
-    }
+    default:
+      return null;
+  }
 }
 </script>
 <template>

@@ -2,7 +2,7 @@ import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { uikitRouter } from './uikit.router';
 import { storeRouter } from './store.router';
-
+import { customerRouter } from './customer.router';
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -32,16 +32,17 @@ const router = createRouter({
           component: () => import('@/views/pages/Documentation.vue')
         },
         {
-          path: '/customer',
-          name: 'ListCustomer',
-          component: () => import('@/views/my-account/ListCustomer.vue')
-        },
-        {
           path: '/banner',
           name: 'Banner',
-          component: () => import('@/views/my-account/Banner.vue')
+          component: () => import('@/views/banner/Banner.vue')
         },
-        ...storeRouter
+        {
+          path: '/sale-report',
+          name: 'sale-report',
+          component: () => import('@/views/sale-report/index.vue')
+        },
+        ...storeRouter,
+        ...customerRouter,
       ]
     },
     {

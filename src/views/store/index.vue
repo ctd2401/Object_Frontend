@@ -28,10 +28,6 @@ const statuses = ref([
   { label: 'OUTOFSTOCK', value: 'outofstock' }
 ]);
 
-function formatCurrency(value) {
-  if (value) return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-  return;
-}
 
 function openNew() {
   store.value = {};
@@ -119,21 +115,6 @@ function deleteSelectedStores() {
   toast.add({ severity: 'success', summary: 'Successful', detail: 'Stores Deleted', life: 3000 });
 }
 
-function getStatusLabel(status) {
-  switch (status) {
-    case 'INSTOCK':
-      return 'success';
-
-    case 'LOWSTOCK':
-      return 'warn';
-
-    case 'OUTOFSTOCK':
-      return 'danger';
-
-    default:
-      return null;
-  }
-}
 const onRowClick = ({ data }) => {
   router.push(`/store/${data.id}`);
 };
