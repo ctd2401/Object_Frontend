@@ -1,7 +1,9 @@
-import { defineStore } from 'pinia';
-import apiClient from '../api/axiosClient';
-export const useAuthStore = defineStore('auth', {
-  state: () => ({
+import service from '@/service';
+import { defineStore } from "pinia";
+import apiClient from "../api/axiosClient";
+
+export const useAuthStore = defineStore("auth",{
+  state: () =>({
     user: null,
     // lưu token từ localStorage nếu đã từng login → giúp giữ trạng thái đăng nhập khi F5
     token: localStorage.getItem('accessToken') || ''
@@ -13,10 +15,11 @@ export const useAuthStore = defineStore('auth', {
     // Dùng some để ktra có ít nhất 1 role là admin
     isAdmin: (state) => state.user?.roles?.some((r) => r.code === 'ADMIN') || false
   },
-  actions: {
-    async login(username, password) {
-      try {
-        const res = await apiClient.post('auth/login', { username, password });
+  actions:{
+    async login(username, password){
+      try{
+        const res = await service.auth.login({username, password})
+        // const res = await apiClient.post("auth/login", {username, password});
         this.token = res.data.accessToken;
         localStorage.setItem('accessToken', this.token);
 
