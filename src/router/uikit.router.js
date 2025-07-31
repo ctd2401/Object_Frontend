@@ -76,3 +76,44 @@ export const uikitRouter = [
     component: () => import('@/views/uikit/TimelineDoc.vue')
   }
 ];
+
+export const pagesExampleRouter = [
+  {
+    path: '/pages/empty',
+    name: 'empty',
+    component: () => import('@/views/pages/Empty.vue')
+  },
+  {
+    path: '/pages/crud',
+    name: 'crud',
+    component: () => import('@/views/pages/Crud.vue')
+  },
+  {
+    path: '/pages/documentation',
+    name: 'documentation',
+    component: () => import('@/views/pages/Documentation.vue')
+  }
+];
+
+export const pagesNotHaveLayoutRouter = [
+  {
+    path: '/auth/access',
+    name: 'accessDenied',
+    component: () => import('@/views/pages/auth/Access.vue')
+  },
+  {
+    path: '/auth/error',
+    name: 'error',
+    component: () => import('@/views/pages/auth/Error.vue')
+  },
+  {
+    path: '/landing',
+    name: 'landing',
+    component: () => import('@/views/pages/Landing.vue')
+  },
+  {
+    path: '/pages/notfound',
+    name: 'notfound',
+    component: () => import('@/views/pages/NotFound.vue')
+  }
+];

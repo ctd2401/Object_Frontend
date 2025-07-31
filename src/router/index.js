@@ -1,7 +1,9 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
-import { uikitRouter } from './uikit.router';
+import { authRouter } from './auth.router';
+import { shiftCalendarRouter } from './shift-calendar.router';
 import { storeRouter } from './store.router';
+import { pagesExampleRouter, pagesNotHaveLayoutRouter, uikitRouter } from './uikit.router';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -16,21 +18,9 @@ const router = createRouter({
           component: () => import('@/views/Dashboard.vue')
         },
         ...uikitRouter,
-        {
-          path: '/pages/empty',
-          name: 'empty',
-          component: () => import('@/views/pages/Empty.vue')
-        },
-        {
-          path: '/pages/crud',
-          name: 'crud',
-          component: () => import('@/views/pages/Crud.vue')
-        },
-        {
-          path: '/pages/documentation',
-          name: 'documentation',
-          component: () => import('@/views/pages/Documentation.vue')
-        },
+        ...storeRouter,
+        ...pagesExampleRouter,
+        ...shiftCalendarRouter,
         {
           path: '/customer',
           name: 'ListCustomer',
@@ -40,37 +30,24 @@ const router = createRouter({
           path: '/banner',
           name: 'Banner',
           component: () => import('@/views/my-account/Banner.vue')
-        },
-        ...storeRouter
+        }
       ]
     },
-    {
-      path: '/landing',
-      name: 'landing',
-      component: () => import('@/views/pages/Landing.vue')
-    },
-    {
-      path: '/pages/notfound',
-      name: 'notfound',
-      component: () => import('@/views/pages/NotFound.vue')
-    },
-
-    {
-      path: '/auth/login',
-      name: 'login',
-      component: () => import('@/views/pages/auth/Login.vue')
-    },
-    {
-      path: '/auth/access',
-      name: 'accessDenied',
-      component: () => import('@/views/pages/auth/Access.vue')
-    },
-    {
-      path: '/auth/error',
-      name: 'error',
-      component: () => import('@/views/pages/auth/Error.vue')
-    }
+    ...authRouter,
+    ...pagesNotHaveLayoutRouter
   ]
+});
+
+router.afterEach((to) => {
+  const nearestWithTitle = to.matched
+    .slice()
+    .reverse()
+    .find((r) => r.meta?.title);
+  if (nearestWithTitle) {
+    document.title = `${nearestWithTitle.meta.title} | Sakai Vue`;
+  } else {
+    document.title = 'Sakai Vue';
+  }
 });
 
 export default router;

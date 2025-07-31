@@ -33,16 +33,16 @@
       </div>
       <div class="w-full h-[1px] bg-gray-300 my-4"></div>
       <div>
-        <div class="font-semibold text-xl">Cấu hình ca trực</div>
+        <div class="font-semibold text-xl">Cấu hình ca làm việc</div>
         <div class="w-full mt-2">
           <div v-for="(item, index) in store?.shift_config || []" :key="index"
             class="flex gap-1 items-end pb-2 mb-2 border-b border-b-gray-300">
             <div class="w-1/4">
-              <p class="mb-1">Tên ca trực</p>
+              <p class="mb-1">Tên ca làm việc</p>
               <InputText v-model="item.name" type="text" placeholder="Nhập tên ca" class="w-full" />
             </div>
             <div class="w-1/4">
-              <p class="mb-1">Mã ca trực</p>
+              <p class="mb-1">Mã ca làm việc</p>
               <InputText v-model="item.code" type="text" placeholder="Nhập mã ca" class="w-full" />
             </div>
             <div class="w-1/4">
@@ -63,16 +63,14 @@
     </div>
     <div class="card col-span-3 mb-0">
       <div class="border shadow-md rounded-xl w-full min-h-[260px] flex justify-center items-center relative">
-        <FileUpload v-if="!src && !store?.logo"   accept="image/*"
-           />
-        <!-- <FileUpload v-if="!src && !store?.logo" mode="basic" chooseLabel="Chọn ảnh cửa hàng"
-          class="p-button-outlined self-center" accept="image/*" customUpload auto @select="onFileSelect" /> -->
+        <FileUpload v-if="!src && !store?.logo" mode="basic" chooseLabel="Chọn ảnh cửa hàng"
+          class="p-button-outlined self-center" accept="image/*" customUpload auto @select="onFileSelect" />
 
         <template v-else>
-          <img :src="src" alt="Image" class="rounded-xl" />
-          <Button icon="pi pi-times" rounded outlined severity="danger" class="!absolute top-4 right-4"></Button>
+          <img :src="src || store?.logo" alt="Image" class="rounded-xl w-full" />
+          <Button icon="pi pi-times" rounded outlined severity="danger" class="!absolute top-4 right-4"
+            @click="removeFile"></Button>
         </template>
-
       </div>
       <FileUpload v-if="src || store?.logo" mode="basic" chooseLabel="Thay đổi ảnh"
         class="p-button-outlined self-center mt-4" accept="image/*" customUpload auto @select="onFileSelect" />
@@ -109,7 +107,8 @@ const emit = defineEmits(['update:modelValue']);
 
 // Local reactive copy
 const store = ref();
-const src = ref(null);
+const src = ref();
+const file = ref();
 
 // Khi props thay đổi từ ngoài
 watch(
@@ -163,15 +162,19 @@ const mapStatus = (code) => {
 };
 
 function onFileSelect(event) {
-  const file = event.files[0];
+  file.value = event.files[0];
   const reader = new FileReader();
 
   reader.onload = async (e) => {
     src.value = e.target.result;
   };
-  console.log(src.value);
-  console.log(file);
 
-  reader.readAsDataURL(file);
+  reader.readAsDataURL(file.value);
 }
+
+const removeFile = () => {
+  file.value = null;
+  src.value = null;
+  store.value.logo = '';
+};
 </script>
