@@ -5,7 +5,7 @@ import NodeService from './NodeService';
 import PhotoService from './PhotoService';
 import ProductService from './ProductService';
 import StoreService from './StoreService';
-
+import MenuService from './MenuService';
 export const BaseService = {
   auth: AuthService,
   country: CountryService,
@@ -13,7 +13,8 @@ export const BaseService = {
   customer: CustomerService,
   node: NodeService,
   photo: PhotoService,
-  product: ProductService
+  product: ProductService,
+  menu: MenuService
 };
 
 export default BaseService;

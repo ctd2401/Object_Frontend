@@ -6,10 +6,10 @@ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 onMounted(() => {
-  getData()
+  getData();
 });
 
-const useStore = useStoreManageStore()
+const useStore = useStoreManageStore();
 const router = useRouter();
 const toast = useToast();
 const dt = ref();
@@ -24,30 +24,19 @@ const filters = ref({
 });
 const submitted = ref(false);
 const statuses = ref([
-  { label: 'INSTOCK', value: 'instock' },
-  { label: 'LOWSTOCK', value: 'lowstock' },
-  { label: 'OUTOFSTOCK', value: 'outofstock' }
+  { label: 'INSTOCK', value: 'INSTOCK' },
+  { label: 'LOWSTOCK', value: 'LOWSTOCK' },
+  { label: 'OUTOFSTOCK', value: 'OUTOFSTOCK' }
 ]);
 
 const getData = async () => {
-  const res = await useStore.getStores()
+  const res = await useStore.getStores();
   if (res.success) {
-    stores.value = res.data
+    stores.value = res.data;
   } else {
     toast.add({ severity: 'error', summary: res?.message, detail: res?.error, life: 3000 });
   }
-}
-
-function formatCurrency(value) {
-  if (value) return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-  return;
-}
-
-function openNew() {
-  store.value = {};
-  submitted.value = false;
-  storeDialog.value = true;
-}
+};
 
 function hideDialog() {
   storeDialog.value = false;
@@ -129,21 +118,6 @@ function deleteSelectedStores() {
   toast.add({ severity: 'success', summary: 'Successful', detail: 'Stores Deleted', life: 3000 });
 }
 
-function getStatusLabel(status) {
-  switch (status) {
-    case 'INSTOCK':
-      return 'success';
-
-    case 'LOWSTOCK':
-      return 'warn';
-
-    case 'OUTOFSTOCK':
-      return 'danger';
-
-    default:
-      return null;
-  }
-}
 const onRowClick = ({ data }) => {
   router.push(`/store/${data.id}`);
 };
@@ -154,10 +128,8 @@ const onRowClick = ({ data }) => {
     <div class="card">
       <Toolbar class="mb-6">
         <template #start>
-          <Button label="New" icon="pi pi-plus" severity="secondary" class="mr-2"
-            @click="$router.push('/store/create')" />
-          <Button label="Delete" icon="pi pi-trash" severity="secondary" @click="confirmDeleteSelected"
-            :disabled="!selectedStores || !selectedStores.length" />
+          <Button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" @click="$router.push('/store/create')" />
+          <Button label="Delete" icon="pi pi-trash" severity="secondary" @click="confirmDeleteSelected" :disabled="!selectedStores || !selectedStores.length" />
         </template>
 
         <template #end>
@@ -165,11 +137,19 @@ const onRowClick = ({ data }) => {
         </template>
       </Toolbar>
 
-      <DataTable ref="dt" v-model:selection="selectedStores" :value="stores" dataKey="id" :paginator="true" :rows="10"
+      <DataTable
+        ref="dt"
+        v-model:selection="selectedStores"
+        :value="stores"
+        dataKey="id"
+        :paginator="true"
+        :rows="5"
         :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        :rowsPerPageOptions="[5, 10, 25]" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} stores"
-        @row-click="onRowClick">
+        :rowsPerPageOptions="[5, 10, 25]"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} stores"
+        @row-click="onRowClick"
+      >
         <template #header>
           <div class="flex flex-wrap gap-2 items-center justify-between">
             <h4 class="m-0">List Stores</h4>
@@ -199,12 +179,10 @@ const onRowClick = ({ data }) => {
 
     <Dialog v-model:visible="storeDialog" :style="{ width: '450px' }" header="Store Details" :modal="true">
       <div class="flex flex-col gap-6">
-        <img v-if="store.image" :src="`https://primefaces.org/cdn/primevue/images/store/${store.image}`"
-          :alt="store.image" class="block m-auto pb-4" />
+        <img v-if="store.image" :src="`https://primefaces.org/cdn/primevue/images/store/${store.image}`" :alt="store.image" class="block m-auto pb-4" />
         <div>
           <label for="name" class="block font-bold mb-3">Name</label>
-          <InputText id="name" v-model.trim="store.name" required="true" autofocus :invalid="submitted && !store.name"
-            fluid />
+          <InputText id="name" v-model.trim="store.name" required="true" autofocus :invalid="submitted && !store.name" fluid />
           <small v-if="submitted && !store.name" class="text-red-500">Name is required.</small>
         </div>
         <div>
@@ -213,8 +191,7 @@ const onRowClick = ({ data }) => {
         </div>
         <div>
           <label for="inventoryStatus" class="block font-bold mb-3">Inventory Status</label>
-          <Select id="inventoryStatus" v-model="store.inventoryStatus" :options="statuses" optionLabel="label"
-            placeholder="Select a Status" fluid></Select>
+          <Select id="inventoryStatus" v-model="store.inventoryStatus" :options="statuses" optionLabel="label" placeholder="Select a Status" fluid></Select>
         </div>
 
         <div>
@@ -260,7 +237,10 @@ const onRowClick = ({ data }) => {
     <Dialog v-model:visible="deleteStoreDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
       <div class="flex items-center gap-4">
         <i class="pi pi-exclamation-triangle !text-3xl" />
-        <span v-if="store">Are you sure you want to delete <b>{{ store.name }}</b>?</span>
+        <span v-if="store"
+          >Are you sure you want to delete <b>{{ store.name }}</b
+          >?</span
+        >
       </div>
       <template #footer>
         <Button label="No" icon="pi pi-times" text @click="deleteStoreDialog = false" />

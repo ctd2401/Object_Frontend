@@ -5,6 +5,8 @@ import { shiftCalendarRouter } from './shift-calendar.router';
 import { storeRouter } from './store.router';
 import { pagesExampleRouter, pagesNotHaveLayoutRouter, uikitRouter } from './uikit.router';
 
+import { customerRouter } from './customer.router';
+import { productRouter } from './product.router';
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -22,15 +24,17 @@ const router = createRouter({
         ...pagesExampleRouter,
         ...shiftCalendarRouter,
         {
-          path: '/customer',
-          name: 'ListCustomer',
-          component: () => import('@/views/my-account/ListCustomer.vue')
-        },
-        {
           path: '/banner',
           name: 'Banner',
-          component: () => import('@/views/my-account/Banner.vue')
-        }
+          component: () => import('@/views/banner/Banner.vue')
+        },
+        {
+          path: '/sale-report',
+          name: 'sale-report',
+          component: () => import('@/views/sale-report/index.vue')
+        },
+        ...customerRouter,
+        ...productRouter
       ]
     },
     ...authRouter,
