@@ -37,16 +37,12 @@ function hideDialog() {
 function saveCustomer() {
   submitted.value = true;
 
-  if (customer?.value.name?.trim()) {
+  if (customer?.value.customer_name?.trim()) {
     if (customer.value.id) {
-      customer.value.inventoryStatus = customer.value.inventoryStatus.value ? customer.value.inventoryStatus.value : customer.value.inventoryStatus;
       customers.value[findIndexById(customer.value.id)] = customer.value;
       toast.add({ severity: 'success', summary: 'Successful', detail: 'Customer Updated', life: 3000 });
     } else {
       customer.value.id = createId();
-      customer.value.code = createId();
-      customer.value.image = 'store-placeholder.svg';
-      customer.value.inventoryStatus = customer.value.inventoryStatus ? customer.value.inventoryStatus.value : 'INSTOCK';
       customers.value.push(customer.value);
       toast.add({ severity: 'success', summary: 'Successful', detail: 'Customer Created', life: 3000 });
     }
@@ -134,7 +130,7 @@ const onRowClick = ({ data }) => {
         :value="customers"
         dataKey="id"
         :paginator="true"
-        :rows="10"
+        :rows="5"
         :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
@@ -171,7 +167,6 @@ const onRowClick = ({ data }) => {
 
     <Dialog v-model:visible="customerDialog" :style="{ width: '450px' }" header="Customer Details" :modal="true">
       <div class="flex flex-col gap-6">
-        <img v-if="customer.image" :src="`https://primefaces.org/cdn/primevue/images/store/${customer.image}`" :alt="customer.image" class="block m-auto pb-4" />
         <div>
           <label for="customer_name" class="block font-bold mb-3">Name</label>
           <InputText id="customer_name" v-model.trim="customer.customer_name" required="true" autofocus :invalid="submitted && !customer.customer_name" fluid />
@@ -179,13 +174,13 @@ const onRowClick = ({ data }) => {
         </div>
         <div>
           <label for="phone_number" class="block font-bold mb-3">Số điện thoại</label>
-          <InputText id="phone_number" v-model.trim="customer.phone_number" required="true" autofocus :invalid="submitted && !customer.phone_number" fluid />
+          <InputText id="phone_number" v-model.trim="customer.phone_number" required="true" :invalid="submitted && !customer.phone_number" fluid />
           <small v-if="submitted && !customer.phone_number" class="text-red-500">Phone is required.</small>
         </div>
         <div>
           <label for="point" class="block font-bold mb-3">Điểm</label>
-          <InputText id="point" v-model.trim="customer.point" required="true" autofocus :invalid="submitted && !customer.point" fluid />
-          <small v-if="submitted && !customer.point" class="text-red-500">Phone is required.</small>
+          <InputText id="point" v-model.trim="customer.point" required="true" :invalid="submitted && !customer.point" fluid />
+          <small v-if="submitted && !customer.point" class="text-red-500">Point is required.</small>
         </div>
       </div>
 
@@ -199,7 +194,7 @@ const onRowClick = ({ data }) => {
       <div class="flex items-center gap-4">
         <i class="pi pi-exclamation-triangle !text-3xl" />
         <span v-if="customer"
-          >Are you sure you want to delete <b>{{ customer.name }}</b
+          >Are you sure you want to delete <b>{{ customer.customer_name }}</b
           >?</span
         >
       </div>

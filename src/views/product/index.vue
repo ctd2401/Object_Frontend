@@ -1,13 +1,16 @@
 <script setup>
-import { ProductService } from '@/service/ProductService';
+import { useProductStore } from '@/stores/product';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 onMounted(() => {
-  ProductService.getProducts().then((data) => (products.value = data));
+  getData();
 });
 
+const useProduct = useProductStore();
+const router = useRouter();
 const toast = useToast();
 const dt = ref();
 const products = ref();
@@ -20,21 +23,27 @@ const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
 const submitted = ref(false);
-const statuses = ref([
-  { label: 'INSTOCK', value: 'instock' },
-  { label: 'LOWSTOCK', value: 'lowstock' },
-  { label: 'OUTOFSTOCK', value: 'outofstock' }
+const typies = ref([
+  { label: 'MÓN CHÍNH', value: 'MÓN CHÍNH' },
+  { label: 'MÓN GỌI THÊM', value: 'MÓN GỌI THÊM' },
+  { label: 'ĐỒ UỐNG PHA CHẾ', value: 'ĐỒ UỐNG PHA CHẾ' },
+  { label: 'KHAI VỊ', value: 'KHAI VỊ' },
+  { label: 'KHÁC', value: 'KHÁC' },
+  { label: 'NƯỚC GIẢI KHÁT', value: 'NƯỚC GIẢI KHÁT' },
+  { label: 'BIA', value: 'BIA' }
 ]);
 
+const getData = async () => {
+  const res = await useProduct.getProducts();
+  if (res.success) {
+    products.value = res.data;
+  } else {
+    toast.add({ severity: 'error', summary: res?.message, detail: res?.error, life: 3000 });
+  }
+};
 function formatCurrency(value) {
-  if (value) return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  if (value) return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   return;
-}
-
-function openNew() {
-  product.value = {};
-  submitted.value = false;
-  productDialog.value = true;
 }
 
 function hideDialog() {
@@ -45,16 +54,16 @@ function hideDialog() {
 function saveProduct() {
   submitted.value = true;
 
-  if (product?.value.name?.trim()) {
+  if (product?.value.name_food?.trim()) {
     if (product.value.id) {
-      product.value.inventoryStatus = product.value.inventoryStatus.value ? product.value.inventoryStatus.value : product.value.inventoryStatus;
+      product.value.type = product.value.type.value ? product.value.type.value : product.value.type;
       products.value[findIndexById(product.value.id)] = product.value;
       toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
     } else {
       product.value.id = createId();
       product.value.code = createId();
       product.value.image = 'product-placeholder.svg';
-      product.value.inventoryStatus = product.value.inventoryStatus ? product.value.inventoryStatus.value : 'INSTOCK';
+      product.value.type = product.value.type ? product.value.type.value : 'INSTOCK';
       products.value.push(product.value);
       toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
     }
@@ -114,24 +123,11 @@ function deleteSelectedProducts() {
   products.value = products.value.filter((val) => !selectedProducts.value.includes(val));
   deleteProductsDialog.value = false;
   selectedProducts.value = null;
-  toast.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+  toast.add({ severity: 'success', summary: 'Successful', detail: 'products Deleted', life: 3000 });
 }
-
-function getStatusLabel(status) {
-  switch (status) {
-    case 'INSTOCK':
-      return 'success';
-
-    case 'LOWSTOCK':
-      return 'warn';
-
-    case 'OUTOFSTOCK':
-      return 'danger';
-
-    default:
-      return null;
-  }
-}
+const onRowClick = ({ data }) => {
+  router.push(`/product/${data.id}`);
+};
 </script>
 
 <template>
@@ -139,7 +135,7 @@ function getStatusLabel(status) {
     <div class="card">
       <Toolbar class="mb-6">
         <template #start>
-          <Button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" @click="openNew" />
+          <Button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" @click="$router.push('/product/create')" />
           <Button label="Delete" icon="pi pi-trash" severity="secondary" @click="confirmDeleteSelected" :disabled="!selectedProducts || !selectedProducts.length" />
         </template>
 
@@ -154,15 +150,16 @@ function getStatusLabel(status) {
         :value="products"
         dataKey="id"
         :paginator="true"
-        :rows="10"
+        :rows="5"
         :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} product"
+        @row-click="onRowClick"
       >
         <template #header>
           <div class="flex flex-wrap gap-2 items-center justify-between">
-            <h4 class="m-0">Manage Products</h4>
+            <h4 class="m-0">Manage Product</h4>
             <IconField>
               <InputIcon>
                 <i class="pi pi-search" />
@@ -173,11 +170,11 @@ function getStatusLabel(status) {
         </template>
 
         <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
-        <Column field="code" header="Code" sortable style="min-width: 12rem"></Column>
-        <Column field="name" header="Name" sortable style="min-width: 16rem"></Column>
+        <Column field="id" header="Code" sortable style="min-width: 8rem"></Column>
+        <Column field="name_food" header="Name Food" sortable style="min-width: 10rem"></Column>
         <Column header="Image">
           <template #body="slotProps">
-            <img :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.data.image}`" :alt="slotProps.data.image" class="rounded" style="width: 64px" />
+            <img :src="slotProps.data.image" class="rounded" style="width: 64px; height: 64px" />
           </template>
         </Column>
         <Column field="price" header="Price" sortable style="min-width: 8rem">
@@ -185,17 +182,13 @@ function getStatusLabel(status) {
             {{ formatCurrency(slotProps.data.price) }}
           </template>
         </Column>
-        <Column field="category" header="Category" sortable style="min-width: 10rem"></Column>
-        <Column field="rating" header="Reviews" sortable style="min-width: 12rem">
+
+        <Column field="type" header="Types" sortable style="min-width: 10rem">
           <template #body="slotProps">
-            <Rating :modelValue="slotProps.data.rating" :readonly="true" />
+            {{ slotProps.data.type }}
           </template>
         </Column>
-        <Column field="inventoryStatus" header="Status" sortable style="min-width: 12rem">
-          <template #body="slotProps">
-            <Tag :value="slotProps.data.inventoryStatus" :severity="getStatusLabel(slotProps.data.inventoryStatus)" />
-          </template>
-        </Column>
+
         <Column :exportable="false" style="min-width: 12rem">
           <template #body="slotProps">
             <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" />
@@ -207,47 +200,21 @@ function getStatusLabel(status) {
 
     <Dialog v-model:visible="productDialog" :style="{ width: '450px' }" header="Product Details" :modal="true">
       <div class="flex flex-col gap-6">
-        <img v-if="product.image" :src="`https://primefaces.org/cdn/primevue/images/product/${product.image}`" :alt="product.image" class="block m-auto pb-4" />
+        <img v-if="product.image" :src="product.image" :alt="product.image" class="block m-auto w-64 h-64 pb-4" />
         <div>
-          <label for="name" class="block font-bold mb-3">Name</label>
-          <InputText id="name" v-model.trim="product.name" required="true" autofocus :invalid="submitted && !product.name" fluid />
-          <small v-if="submitted && !product.name" class="text-red-500">Name is required.</small>
+          <label for="name_food" class="block font-bold mb-3">Tên món ăn</label>
+          <InputText id="name_food" v-model.trim="product.name_food" required="true" autofocus :invalid="submitted && !product.name_food" fluid />
+          <small v-if="submitted && !product.name_food" class="text-red-500">Name food is required.</small>
         </div>
         <div>
-          <label for="description" class="block font-bold mb-3">Description</label>
-          <Textarea id="description" v-model="product.description" required="true" rows="3" cols="20" fluid />
-        </div>
-        <div>
-          <label for="inventoryStatus" class="block font-bold mb-3">Inventory Status</label>
-          <Select id="inventoryStatus" v-model="product.inventoryStatus" :options="statuses" optionLabel="label" placeholder="Select a Status" fluid></Select>
-        </div>
-
-        <div>
-          <span class="block font-bold mb-4">Category</span>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="flex items-center gap-2 col-span-6">
-              <RadioButton id="category1" v-model="product.category" name="category" value="Accessories" />
-              <label for="category1">Accessories</label>
-            </div>
-            <div class="flex items-center gap-2 col-span-6">
-              <RadioButton id="category2" v-model="product.category" name="category" value="Clothing" />
-              <label for="category2">Clothing</label>
-            </div>
-            <div class="flex items-center gap-2 col-span-6">
-              <RadioButton id="category3" v-model="product.category" name="category" value="Electronics" />
-              <label for="category3">Electronics</label>
-            </div>
-            <div class="flex items-center gap-2 col-span-6">
-              <RadioButton id="category4" v-model="product.category" name="category" value="Fitness" />
-              <label for="category4">Fitness</label>
-            </div>
-          </div>
+          <label for="type" class="block font-bold mb-3">Loại món ăn</label>
+          <Select id="type" v-model="product.type" :options="typies" optionLabel="label" placeholder="Lựa chọn loại món ăn" fluid></Select>
         </div>
 
         <div class="grid grid-cols-12 gap-4">
           <div class="col-span-6">
             <label for="price" class="block font-bold mb-3">Price</label>
-            <InputNumber id="price" v-model="product.price" mode="currency" currency="USD" locale="en-US" fluid />
+            <InputNumber id="price" v-model="product.price" mode="currency" currency="VND" locale="vi-VN" fluid />
           </div>
           <div class="col-span-6">
             <label for="quantity" class="block font-bold mb-3">Quantity</label>
@@ -266,7 +233,7 @@ function getStatusLabel(status) {
       <div class="flex items-center gap-4">
         <i class="pi pi-exclamation-triangle !text-3xl" />
         <span v-if="product"
-          >Are you sure you want to delete <b>{{ product.name }}</b
+          >Are you sure you want to delete <b>{{ product.name_food }}</b
           >?</span
         >
       </div>

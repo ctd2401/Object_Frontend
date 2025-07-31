@@ -24,9 +24,9 @@ const filters = ref({
 });
 const submitted = ref(false);
 const statuses = ref([
-  { label: 'INSTOCK', value: 'instock' },
-  { label: 'LOWSTOCK', value: 'lowstock' },
-  { label: 'OUTOFSTOCK', value: 'outofstock' }
+  { label: 'INSTOCK', value: 'INSTOCK' },
+  { label: 'LOWSTOCK', value: 'LOWSTOCK' },
+  { label: 'OUTOFSTOCK', value: 'OUTOFSTOCK' }
 ]);
 
 const getData = async () => {
@@ -143,7 +143,7 @@ const onRowClick = ({ data }) => {
         :value="stores"
         dataKey="id"
         :paginator="true"
-        :rows="10"
+        :rows="5"
         :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"

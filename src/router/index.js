@@ -1,8 +1,9 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
-import { uikitRouter } from './uikit.router';
-import { storeRouter } from './store.router';
 import { customerRouter } from './customer.router';
+import { productRouter } from './product.router';
+import { storeRouter } from './store.router';
+import { uikitRouter } from './uikit.router';
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -43,6 +44,7 @@ const router = createRouter({
         },
         ...storeRouter,
         ...customerRouter,
+        ...productRouter
       ]
     },
     {

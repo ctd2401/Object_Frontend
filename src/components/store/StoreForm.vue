@@ -62,11 +62,11 @@ const removeShiftConfig = (index) => {
 };
 
 const mapStatus = (code) => {
-  const resull = {
+  const result = {
     false: { label: 'Đã dừng hoạt động' },
     true: { label: 'Đang hoạt động' }
   };
-  return resull[code];
+  return result[code];
 };
 
 function onFileSelect(event) {
