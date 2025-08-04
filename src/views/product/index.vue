@@ -5,9 +5,12 @@ import { useToast } from 'primevue/usetoast';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+import { useCategoryStore } from '@/stores/category';
+
 onMounted(() => {
   getData();
 });
+const useCategory = useCategoryStore();
 
 const useProduct = useProductStore();
 const router = useRouter();
@@ -23,15 +26,7 @@ const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
 const submitted = ref(false);
-const typies = ref([
-  { label: 'MÓN CHÍNH', value: 'MÓN CHÍNH' },
-  { label: 'MÓN GỌI THÊM', value: 'MÓN GỌI THÊM' },
-  { label: 'ĐỒ UỐNG PHA CHẾ', value: 'ĐỒ UỐNG PHA CHẾ' },
-  { label: 'KHAI VỊ', value: 'KHAI VỊ' },
-  { label: 'KHÁC', value: 'KHÁC' },
-  { label: 'NƯỚC GIẢI KHÁT', value: 'NƯỚC GIẢI KHÁT' },
-  { label: 'BIA', value: 'BIA' }
-]);
+const typies = useCategory.getCategories();
 
 const getData = async () => {
   const res = await useProduct.getProducts();
@@ -73,10 +68,10 @@ function saveProduct() {
   }
 }
 
-function editProduct(prod) {
-  product.value = { ...prod };
-  productDialog.value = true;
-}
+// function editProduct(prod) {
+//   product.value = { ...prod };
+//   productDialog.value = true;
+// }
 
 function confirmDeleteProduct(prod) {
   product.value = prod;
@@ -123,7 +118,7 @@ function deleteSelectedProducts() {
   products.value = products.value.filter((val) => !selectedProducts.value.includes(val));
   deleteProductsDialog.value = false;
   selectedProducts.value = null;
-  toast.add({ severity: 'success', summary: 'Successful', detail: 'products Deleted', life: 3000 });
+  toast.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
 }
 const onRowClick = ({ data }) => {
   router.push(`/product/${data.id}`);
@@ -136,7 +131,13 @@ const onRowClick = ({ data }) => {
       <Toolbar class="mb-6">
         <template #start>
           <Button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" @click="$router.push('/product/create')" />
-          <Button label="Delete" icon="pi pi-trash" severity="secondary" @click="confirmDeleteSelected" :disabled="!selectedProducts || !selectedProducts.length" />
+          <Button
+            label="Delete"
+            icon="pi pi-trash"
+            severity="secondary"
+            @click="confirmDeleteSelected"
+            :disabled="!selectedProducts || !selectedProducts.length"
+          />
         </template>
 
         <template #end>
@@ -191,7 +192,7 @@ const onRowClick = ({ data }) => {
 
         <Column :exportable="false" style="min-width: 12rem">
           <template #body="slotProps">
-            <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" />
+            <!-- <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" /> -->
             <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteProduct(slotProps.data)" />
           </template>
         </Column>

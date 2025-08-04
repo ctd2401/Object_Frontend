@@ -6,6 +6,7 @@ import PhotoService from './PhotoService';
 import ProductService from './ProductService';
 import StoreService from './StoreService';
 import MenuService from './MenuService';
+import CategoryService from './CategoryService';
 export const BaseService = {
   auth: AuthService,
   country: CountryService,
@@ -14,7 +15,8 @@ export const BaseService = {
   node: NodeService,
   photo: PhotoService,
   product: ProductService,
-  menu: MenuService
+  menu: MenuService,
+  category: CategoryService,
 };
 
 export default BaseService;

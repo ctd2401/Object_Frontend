@@ -32,11 +32,10 @@ const breadcrumbItems = ref([{ label: 'Danh sách khách hàng', route: '/custom
     </Breadcrumb>
 
     <div class="w-full flex justify-end gap-4 mb-4">
-      <Button label="Hủy bỏ" severity="secondary" raised />
+      <Button label="Hủy bỏ" @click="$router.push(`/customer`)" severity="secondary" raised />
       <Button label="Lưu lại" raised />
     </div>
 
     <customer-form v-model="customer" />
   </div>
 </template>
-
