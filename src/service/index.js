@@ -1,11 +1,13 @@
 import AuthService from './AuthService';
 import CountryService from './CountryService';
 import CustomerService from './CustomerService';
+import MenuService from './MenuService';
 import NodeService from './NodeService';
 import PhotoService from './PhotoService';
 import ProductService from './ProductService';
+import ShiftCalendarService from './ShiftCalendarService';
 import StoreService from './StoreService';
-import MenuService from './MenuService';
+
 export const BaseService = {
   auth: AuthService,
   country: CountryService,
@@ -14,7 +16,8 @@ export const BaseService = {
   node: NodeService,
   photo: PhotoService,
   product: ProductService,
-  menu: MenuService
+  menu: MenuService,
+  shiftCalendar: ShiftCalendarService,
 };
 
 export default BaseService;
