@@ -19,10 +19,13 @@ const product = ref({
   quantity: '',
   phone_number: '',
   status: true,
-  image: '',
+  image: ''
 });
 const breadcrumbHome = ref({ icon: 'pi pi-home', route: '/' });
-const breadcrumbItems = computed(() => [{ label: 'Danh sách cửa hàng', route: '/product' }, { label: isEdit.value ? 'Chi tiết' : 'Tạo sản phẩm mới' }]);
+const breadcrumbItems = computed(() => [
+  { label: 'Danh sách cửa hàng', route: '/product' },
+  { label: isEdit.value ? 'Chi tiết' : 'Tạo sản phẩm mới' }
+]);
 
 const isEdit = computed(() => !!route?.params?.id);
 
@@ -51,11 +54,11 @@ const getData = async () => {
     </Breadcrumb>
 
     <div class="w-full flex justify-end gap-4 mb-4">
-      <Button label="Hủy bỏ" severity="secondary" raised />
+      <Button label="Hủy bỏ" @click="$router.push(`/product`)" severity="secondary" raised />
       <Button label="Lưu lại" raised />
     </div>
 
-    <product-form v-model="product" :is-edit="isEdit" />
+    <product-form v-model="product" :is-edit="isEdit" :list-catgory="typies" />
 
     <Toast />
   </div>

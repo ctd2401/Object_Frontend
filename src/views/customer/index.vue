@@ -153,7 +153,7 @@ const onRowClick = ({ data }) => {
         <Column field="id" header="Code" sortable style="min-width: 8rem"></Column>
         <Column field="phone_number" header="Phone" sortable style="min-width: 12rem"> </Column>
         <Column field="customer_name" header="Name" sortable style="min-width: 16rem"></Column>
-        <Column field="point" header="Điểm" sortable style="min-width: 16rem"></Column>
+        <Column field="point" header="Điểm" sortable style="min-width: 12rem"></Column>
 
         <Column field="created_at" header="Created At" sortable style="min-width: 15rem"></Column>
         <Column :exportable="false" style="min-width: 12rem">

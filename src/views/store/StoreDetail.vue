@@ -53,7 +53,7 @@ const getData = async () => {
     </Breadcrumb>
 
     <div class="w-full flex justify-end gap-4 mb-4">
-      <Button label="Hủy bỏ" severity="secondary" raised />
+      <Button label="Hủy bỏ" @click="$router.push(`/store`)" severity="secondary" raised />
       <Button label="Lưu lại" raised />
     </div>
 

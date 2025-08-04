@@ -114,3 +114,4 @@ td {
   padding: 4px;
 }
 </style>
+<style lang="scss" scoped></style>

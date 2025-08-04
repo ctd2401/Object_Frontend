@@ -5,6 +5,7 @@ import { shiftCalendarRouter } from './shift-calendar.router';
 import { storeRouter } from './store.router';
 import { pagesExampleRouter, pagesNotHaveLayoutRouter, uikitRouter } from './uikit.router';
 
+import { categoryRouter } from './category.router';
 import { customerRouter } from './customer.router';
 import { productRouter } from './product.router';
 const router = createRouter({
@@ -34,7 +35,8 @@ const router = createRouter({
           component: () => import('@/views/sale-report/index.vue')
         },
         ...customerRouter,
-        ...productRouter
+        ...productRouter,
+        ...categoryRouter
       ]
     },
     ...authRouter,

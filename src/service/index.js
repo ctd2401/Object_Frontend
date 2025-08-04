@@ -1,4 +1,5 @@
 import AuthService from './AuthService';
+import CategoryService from './CategoryService';
 import CountryService from './CountryService';
 import CustomerService from './CustomerService';
 import MenuService from './MenuService';
@@ -18,6 +19,7 @@ export const BaseService = {
   product: ProductService,
   menu: MenuService,
   shiftCalendar: ShiftCalendarService,
+  category: CategoryService,
 };
 
 export default BaseService;
