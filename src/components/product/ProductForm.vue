@@ -1,28 +1,31 @@
 <script setup>
-import { useCategoryStore } from '@/stores/category';
-import { onMounted, ref, watch } from 'vue';
+import { useCategoryStore } from "@/stores/category";
+import { computed, onMounted, ref, watch } from "vue";
+
 const props = defineProps({
   modelValue: {
     type: Object,
-    default: () => ({})
+    default: () => ({}),
   },
   isEdit: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 const useCategory = useCategoryStore();
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(["update:modelValue"]);
 onMounted(() => {
   useCategory.getCategories();
 });
 const typies = useCategory.typies;
+
 // Local reactive copy
 const product = ref();
 const src = ref();
 const file = ref();
-// Khi props thay đổi từ ngoài
+const selectedImage = ref("");
+
 watch(
   () => props.modelValue,
   (newVal) => {
@@ -31,12 +34,11 @@ watch(
   { immediate: true, deep: true }
 );
 
-// Khi local product thay đổi, emit ra ngoài
 watch(
   product,
   (newVal, oldVal) => {
     if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
-      emit('update:modelValue', newVal);
+      emit("update:modelValue", newVal);
     }
   },
   { deep: true }
@@ -44,8 +46,8 @@ watch(
 
 const mapStatus = (code) => {
   const result = {
-    false: { label: 'Hết hàng' },
-    true: { label: 'Còn hàng' }
+    false: { label: "Hết hàng" },
+    true: { label: "Còn hàng" },
   };
   return result[code];
 };
@@ -57,78 +59,235 @@ function onFileSelect(event) {
   reader.onload = async (e) => {
     src.value = e.target.result;
   };
-  console.log(src.value);
-  console.log(file);
-
   reader.readAsDataURL(file.value);
 }
+
 const removeFile = () => {
   file.value = null;
   src.value = null;
-  product.value.image = '';
+  product.value.image = "";
 };
+
+// 👉 Computed final price
+const finalPrice = computed(() => {
+  if (!product.value) return 0;
+  let price = props.modelValue.origin_price || 0;
+  Object.values(product.value.variants || {}).forEach((arr) => {
+    arr.forEach((opt) => {
+      if (opt.clicked) {
+        price += opt.price_diff || 0;
+      }
+    });
+  });
+  return price;
+});
+
+// 👉 Display price with locale currency format
+const displayPrice = computed(() => {
+  try {
+    return finalPrice.value.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+  } catch (e) {
+    return `${finalPrice.value} VND`;
+  }
+});
+
+// 👉 Cập nhật ảnh theo variant chọn
+function updateImage() {
+  if (!product.value) return;
+  let image = props.modelValue.image;
+  Object.values(product.value.variants || {}).forEach((arr) => {
+    arr.forEach((opt) => {
+      if (opt.clicked && opt.image) {
+        image = opt.image;
+      }
+    });
+  });
+  product.value.image = image;
+  selectedImage.value = "";
+}
+
+const images = computed(() => {
+  if (!product.value) return [];
+  const list = [];
+
+  // Luôn thêm ảnh gốc đầu tiên
+  if (props.modelValue.image) {
+    list.push(props.modelValue.image);
+  }
+
+  // Thêm ảnh từ các variant được chọn
+  Object.values(product.value.variants || {}).forEach((arr) => {
+    arr.forEach((opt) => {
+      if (opt.clicked && opt.image) {
+        list.push(opt.image);
+      }
+    });
+  });
+
+  return list;
+});
+
+const mainImage = computed(() => {
+  if (!product.value) return "";
+  return selectedImage.value || product.value.image || images.value[0] || "";
+});
+
+// 👉 Gộp mô tả ngắn và chi tiết thành một nội dung hiển thị
+const combinedDescription = computed(() => {
+  if (!product.value) return "";
+  const parts = [];
+  if (product.value.short_description) parts.push(product.value.short_description);
+  if (product.value.description_detail) parts.push(product.value.description_detail);
+  if (!parts.length && product.value.description) parts.push(product.value.description);
+  return parts.join("\n\n");
+});
 </script>
 
 <template>
-  <div class="grid grid-cols-10 gap-4">
+  <div class="grid grid-cols-10 gap-4 back_gr">
     <div class="card col-span-7 !mb-0">
       <div class="flex flex-col gap-4 w-full">
         <div class="flex items-center justify-between">
-          <p class="font-semibold text-xl">Product</p>
-          <label for="status-switch" :class="['flex items-center gap-3 font-medium', product?.status ? 'text-green-500' : 'text-red-500']">
-            {{ mapStatus(product?.status)?.label }}
-            <ToggleSwitch id="status-switch" v-model="product.status" />
-          </label>
-        </div>
-        <div class="flex flex-col gap-1">
-          <label for="name_food">Tên món ăn</label>
-          <InputText id="name_food" v-model="product.name_food" type="text" placeholder="Nhập tên món ăn" />
-        </div>
-        <div class="flex flex-col md:flex-row gap-4">
-          <div class="flex flex-col gap-1 w-full">
-            <label for="price">Giá</label>
-            <InputText id="price" v-model="product.price" type="text" placeholder="Nhập giá" />
+          <div :class="['s1 flex items-center gap-2 font-medium']">
+            <span
+              class="text-sm px-2 py-1 rounded-full"
+              :class="
+                product?.available
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-red-100 text-red-700'
+              "
+            >
+              {{ mapStatus(product?.available)?.label }}
+            </span>
           </div>
-          <div class="flex flex-col gap-1 w-full">
-            <label for="quantity">Số lượng</label>
-            <InputText id="quantity" v-model="product.quantity" type="text" placeholder="Nhập số lượng" />
+          <div class="s1 font-semibold text_money">{{ displayPrice }}</div>
+        </div>
+
+        <div class="s1 flex flex-col gap-1">
+          <label for="name" class="text-sm text-surface-500">Tên sản phẩm</label>
+          <div>{{ product?.name }}</div>
+        </div>
+        <div class="s1 flex flex-col gap-1">
+          <label for="category" class="text-sm text-surface-500">Danh mục</label>
+          <div>{{ product?.category }}</div>
+        </div>
+        <div class="s1 flex flex-col gap-1">
+          <label for="description" class="text-sm text-surface-500">Mô tả</label>
+          <div class="border rounded-md p-3 bg-surface-0 max-h-[220px] overflow-auto">
+            {{ combinedDescription }}
           </div>
         </div>
-        <div class="flex flex-col gap-1">
-          <label for="type" class="block font-bold mb-3">Loại món ăn</label>
-          <Select id="type" v-model="product.type" :options="typies" optionLabel="label" placeholder="Lựa chọn loại món ăn" fluid></Select>
+
+        <div class="border-t border-surface-200 my-2"></div>
+
+        <div
+          v-if="product?.variants && Object.keys(product.variants).length"
+          class="s1 flex flex-col gap-3"
+        >
+          <p class="font-medium">Tùy chọn thuộc tính</p>
+          <div
+            v-for="(value, key) in product.variants"
+            :key="key"
+            class="flex flex-col gap-2"
+          >
+            <label :for="key" class="text-sm text-surface-500">{{ key }}</label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="(v, k) in value"
+                :key="k"
+                :class="[
+                  'px-3 py-1 rounded-lg border transition-colors',
+                  v.available === false
+                    ? 'bg-gray-300 text-gray-500 border-surface-200 opacity-60 cursor-not-allowed'
+                    : v.clicked
+                    ? 'bg-green-500 text-white border-green-500'
+                    : 'bg-surface-0 border-surface-200 hover:bg-surface-100',
+                ]"
+                :disabled="v.available === false"
+                @click="
+                  v.available === false
+                    ? null
+                    : (v.clicked
+                        ? (v.clicked = false)
+                        : (value.forEach((item) => (item.clicked = false)),
+                          (v.clicked = true)),
+                      updateImage())
+                "
+              >
+                {{ v.name }}
+                <span
+                  v-if="v.price_diff !== undefined && v.price_diff !== 0"
+                  class="ml-2 text-xs opacity-80"
+                >
+                  {{ v.price_diff > 0 ? "+" : "-"
+                  }}{{
+                    Math.abs(v.price_diff).toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  }}
+                </span>
+                <span v-if="v.available === false" class="ml-2 text-xs">(Hết hàng)</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="card col-span-3 mb-0">
-      <div class="border shadow-md rounded-xl w-full min-h-[260px] flex justify-center items-center relative">
-        <!-- <FileUpload v-if="!src && !product?.image" accept="image/*" /> -->
-        <FileUpload
-          v-if="!src && !product?.image"
-          mode="basic"
-          chooseLabel="Chọn ảnh cửa hàng"
-          class="p-button-outlined self-center"
-          accept="image/*"
-          customUpload
-          auto
-          @select="onFileSelect"
-        />
 
-        <template v-else>
-          <img :src="src || product?.image" alt="Image" class="rounded-xl" />
-          <Button icon="pi pi-times" rounded outlined severity="danger" class="!absolute top-4 right-4" @click="removeFile"></Button>
-        </template>
+    <div class="card col-span-3 mb-0">
+      <div
+        class="w-full flex flex-col gap-3"
+        :style="{ height: `calc(100vh - var(--layout-header-height))` }"
+      >
+        <div
+          class="border shadow-md rounded-xl w-full min-h-[260px] flex justify-center items-center p-2 bg-surface-0"
+        >
+          <img
+            :src="mainImage"
+            alt="Image"
+            class="rounded-xl max-h-[260px] object-contain"
+          />
+        </div>
+        <div v-if="images.length > 1" class="flex-1 overflow-auto">
+          <div class="grid grid-cols-3 gap-2 min-w-full">
+            <button
+              v-for="(img, idx) in images"
+              :key="idx"
+              class="border rounded-lg overflow-hidden aspect-square flex items-center justify-center"
+              :class="img === mainImage ? 'ring-2 ring-primary' : ''"
+              @click="selectedImage = img"
+            >
+              <img :src="img" alt="thumb" class="object-contain max-h-full" />
+            </button>
+          </div>
+        </div>
       </div>
-      <FileUpload
-        v-if="src || product?.image"
-        mode="basic"
-        chooseLabel="Thay đổi ảnh"
-        class="p-button-outlined self-center mt-4"
-        accept="image/*"
-        customUpload
-        auto
-        @select="onFileSelect"
-      />
     </div>
   </div>
 </template>
+
+<style scoped>
+.s1 {
+  font-size: 20px;
+}
+.gray {
+  background-color: gray;
+  width: 40px;
+  height: 40px;
+}
+.green {
+  width: 40px;
+  height: 40px;
+  background-color: green;
+}
+text_money {
+  background-color: #788176;
+}
+back_gr {
+  background-color: #ccb999;
+}
+</style>

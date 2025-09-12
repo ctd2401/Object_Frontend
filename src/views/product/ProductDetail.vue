@@ -1,10 +1,10 @@
 <script setup>
-import { useToast } from 'primevue/usetoast';
-import { computed, onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useToast } from "primevue/usetoast";
+import { computed, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 
-import ProductForm from '@/components/product/ProductForm.vue';
-import { useProductStore } from '@/stores/product';
+import ProductForm from "@/components/product/ProductForm.vue";
+import { useProductStore } from "@/stores/product";
 
 onMounted(() => {
   getData();
@@ -14,52 +14,88 @@ const useProduct = useProductStore();
 const route = useRoute();
 const toast = useToast();
 const product = ref({
-  name_food: '',
-  price: '',
-  quantity: '',
-  phone_number: '',
+  id: null,
+  code: null,
+  slug: null,
+  description: "",
+  origin_price: "",
   status: true,
-  image: ''
+  category: "",
+  image: "",
+  variants: {},
 });
-const breadcrumbHome = ref({ icon: 'pi pi-home', route: '/' });
+const breadcrumbHome = ref({ icon: "pi pi-home", route: "/" });
 const breadcrumbItems = computed(() => [
-  { label: 'Danh sách cửa hàng', route: '/product' },
-  { label: isEdit.value ? 'Chi tiết' : 'Tạo sản phẩm mới' }
+  { label: "Danh sách sản phẩm", route: "/product" },
+  { label: isEdit.value ? "Chi tiết" : "Tạo sản phẩm mới" },
 ]);
 
-const isEdit = computed(() => !!route?.params?.id);
+const isEdit = computed(() => !!(route?.params?.slug || route?.query?.id));
 
 const getData = async () => {
   if (!isEdit.value) return;
-  const res = await useProduct.getDetailProduct(Number(route.params.id));
+  // Ưu tiên call theo id (query), nếu không có thì fallback sang id suy ra từ slug (server chấp nhận id)
+  const payload = route.query.id ? Number(route.query.id) : route.params.slug;
+  const res = await useProduct.getDetailProduct(payload);
   if (res.success) product.value = res.data;
-  else toast.add({ severity: 'error', summary: res?.message, detail: res?.error, life: 3000 });
+  else
+    toast.add({
+      severity: "error",
+      summary: res?.message,
+      detail: res?.error,
+      life: 3000,
+    });
 };
 </script>
 
 <template>
   <div>
-    <Breadcrumb :home="breadcrumbHome" :model="breadcrumbItems" class="mb-6">
+    <Breadcrumb
+      :home="breadcrumbHome"
+      :model="breadcrumbItems"
+      class="mb-6"
+      style="background-color: #ccb999"
+    >
       <template #item="{ item, props }">
-        <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+        <router-link
+          v-if="item.route"
+          v-slot="{ href, navigate }"
+          :to="item.route"
+          custom
+        >
           <a :href="href" v-bind="props.action" @click="navigate">
             <span :class="[item.icon, 'text-color']" />
-            <span class="text-primary font-semibold">{{ item.label }}</span>
+            <span class="breadcrumb-link">{{ item.label }}</span>
           </a>
         </router-link>
         <a v-else :href="item.url" :target="item.target" v-bind="props.action">
-          <span class="text-surface-700 dark:text-surface-0">{{ item.label }}</span>
+          <span class="breadcrumb-active">{{ item.label }}</span>
         </a>
       </template>
     </Breadcrumb>
 
-    <div class="w-full flex justify-end gap-4 mb-4">
-      <Button label="Hủy bỏ" @click="$router.push(`/product`)" severity="secondary" raised />
-      <Button label="Lưu lại" raised />
-    </div>
-
-    <product-form v-model="product" :is-edit="isEdit" :list-catgory="typies" />
+    <product-form v-model="product" :is-edit="isEdit" />
 
     <Toast />
   </div>
 </template>
+
+<style>
+body,
+html {
+  background-color: #ccb999;
+}
+.breadcrumb-link {
+  color: #000000; /* Màu link (ví dụ: xanh đậm) */
+  font-weight: 500;
+}
+
+.breadcrumb-link:hover {
+  color: #ffffff; /* Màu khi hover */
+}
+
+.breadcrumb-active {
+  color: #5e1803; /* Màu active (ví dụ: xanh lá) */
+  font-weight: 700;
+}
+</style>

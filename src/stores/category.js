@@ -10,7 +10,7 @@ export const useCategoryStore = defineStore('category', {
     async getCategories(payload) {
       try {
         const res = await service.category.getCategories(payload);
-        this.typies = (res.data || []).map((item) => ({ label: item.label, des: item.des, id: item.id }));
+        this.typies = (res.data || []).map((item) => ({ label: item.name || item.label, des: item.des, id: item.id }));
         return res;
       } catch (error) {
         return {

@@ -1,258 +1,167 @@
 <script setup>
-import { useProductStore } from '@/stores/product';
-import { FilterMatchMode } from '@primevue/core/api';
-import { useToast } from 'primevue/usetoast';
-import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
-
-import { useCategoryStore } from '@/stores/category';
-
-onMounted(() => {
-  getData();
-});
-const useCategory = useCategoryStore();
+import { useProductStore } from "@/stores/product";
+import { useToast } from "primevue/usetoast";
+import { onMounted, onUnmounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 const useProduct = useProductStore();
+const route = useRoute();
 const router = useRouter();
 const toast = useToast();
-const dt = ref();
-const products = ref();
-const productDialog = ref(false);
-const deleteProductDialog = ref(false);
-const deleteProductsDialog = ref(false);
-const product = ref({});
-const selectedProducts = ref();
-const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-});
-const submitted = ref(false);
-const typies = useCategory.getCategories();
+
+const products = ref([]);
+const page = ref(1);
+const totalPages = ref(1);
+const pageSize = 12;
+const keyword = ref("");
+const loading = ref(false); // trạng thái loading
+let searchTimer;
 
 const getData = async () => {
-  const res = await useProduct.getProducts();
+  loading.value = true;
+  const res = await useProduct.getProducts({
+    page: page.value,
+    page_size: pageSize,
+    keyword: keyword.value.trim(),
+  });
   if (res.success) {
-    products.value = res.data;
+    if (page.value === 1) products.value = res.data || [];
+    else products.value = [...products.value, ...(res.data || [])];
+    totalPages.value = res?.meta?.total_pages || 1;
   } else {
-    toast.add({ severity: 'error', summary: res?.message, detail: res?.error, life: 3000 });
+    toast.add({
+      severity: "error",
+      summary: res?.message,
+      detail: res?.error,
+      life: 3000,
+    });
   }
+  loading.value = false;
 };
-function formatCurrency(value) {
-  if (value) return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-  return;
-}
 
-function hideDialog() {
-  productDialog.value = false;
-  submitted.value = false;
-}
-
-function saveProduct() {
-  submitted.value = true;
-
-  if (product?.value.name_food?.trim()) {
-    if (product.value.id) {
-      product.value.type = product.value.type.value ? product.value.type.value : product.value.type;
-      products.value[findIndexById(product.value.id)] = product.value;
-      toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
-    } else {
-      product.value.id = createId();
-      product.value.code = createId();
-      product.value.image = 'product-placeholder.svg';
-      product.value.type = product.value.type ? product.value.type.value : 'INSTOCK';
-      products.value.push(product.value);
-      toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
-    }
-
-    productDialog.value = false;
-    product.value = {};
-  }
-}
-
-// function editProduct(prod) {
-//   product.value = { ...prod };
-//   productDialog.value = true;
-// }
-
-function confirmDeleteProduct(prod) {
-  product.value = prod;
-  deleteProductDialog.value = true;
-}
-
-function deleteProduct() {
-  products.value = products.value.filter((val) => val.id !== product.value.id);
-  deleteProductDialog.value = false;
-  product.value = {};
-  toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
-}
-
-function findIndexById(id) {
-  let index = -1;
-  for (let i = 0; i < products.value.length; i++) {
-    if (products.value[i].id === id) {
-      index = i;
-      break;
-    }
-  }
-
-  return index;
-}
-
-function createId() {
-  let id = '';
-  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (var i = 0; i < 5; i++) {
-    id += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return id;
-}
-
-function exportCSV() {
-  dt.value.exportCSV();
-}
-
-function confirmDeleteSelected() {
-  deleteProductsDialog.value = true;
-}
-
-function deleteSelectedProducts() {
-  products.value = products.value.filter((val) => !selectedProducts.value.includes(val));
-  deleteProductsDialog.value = false;
-  selectedProducts.value = null;
-  toast.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
-}
-const onRowClick = ({ data }) => {
-  router.push(`/product/${data.id}`);
+const goDetail = (item) => {
+  if (item.slug) return router.push(`/product/${item.slug}?id=${item.id}`);
+  return router.push(`/product/${item.id}?id=${item.id}`);
 };
+
+const formatVND = (n) =>
+  n || n === 0
+    ? Number(n).toLocaleString("vi-VN", { style: "currency", currency: "VND" })
+    : "";
+
+const loadMore = async () => {
+  if (page.value >= totalPages.value) return;
+  page.value += 1;
+  await getData();
+};
+
+const onSearch = async () => {
+  page.value = 1;
+  router.replace({ path: "/product", query: { keyword: keyword.value || undefined } });
+  await getData();
+};
+
+watch(
+  () => keyword.value,
+  () => {
+    if (searchTimer) clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      onSearch();
+    }, 2000); // debounce 2s
+  }
+);
+
+onMounted(async () => {
+  if (route.query.keyword) keyword.value = String(route.query.keyword);
+  await getData();
+});
+
+onUnmounted(() => {
+  if (searchTimer) clearTimeout(searchTimer);
+});
 </script>
 
 <template>
-  <div>
-    <div class="card">
-      <Toolbar class="mb-6">
-        <template #start>
-          <Button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" @click="$router.push('/product/create')" />
-          <Button
-            label="Delete"
-            icon="pi pi-trash"
-            severity="secondary"
-            @click="confirmDeleteSelected"
-            :disabled="!selectedProducts || !selectedProducts.length"
-          />
-        </template>
+  <div
+    style="min-height: calc(100vh - var(--layout-header-height))"
+    class="flex flex-col body"
+  >
+    <div class="card;background-color:#CCB999">
+      <!-- Ô tìm kiếm -->
+      <div class="mb-4 flex gap-2">
+        <InputText
+          v-model="keyword"
+          placeholder="Tìm kiếm sản phẩm theo tên/mã sản phẩm"
+          @keyup.enter="onSearch"
+        />
+        <Button
+          label="Tìm"
+          style="background-color: #788176"
+          icon="pi pi-search"
+          @click="onSearch"
+        />
+      </div>
 
-        <template #end>
-          <Button label="Export" icon="pi pi-upload" severity="secondary" @click="exportCSV($event)" />
-        </template>
-      </Toolbar>
-
-      <DataTable
-        ref="dt"
-        v-model:selection="selectedProducts"
-        :value="products"
-        dataKey="id"
-        :paginator="true"
-        :rows="5"
-        :filters="filters"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-        :rowsPerPageOptions="[5, 10, 25]"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} product"
-        @row-click="onRowClick"
+      <!-- Skeleton Loading -->
+      <div
+        v-if="loading"
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4"
       >
-        <template #header>
-          <div class="flex flex-wrap gap-2 items-center justify-between">
-            <h4 class="m-0">Manage Product</h4>
-            <IconField>
-              <InputIcon>
-                <i class="pi pi-search" />
-              </InputIcon>
-              <InputText v-model="filters['global'].value" placeholder="Search..." />
-            </IconField>
-          </div>
-        </template>
-
-        <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
-        <Column field="id" header="Code" sortable style="min-width: 8rem"></Column>
-        <Column field="name_food" header="Name Food" sortable style="min-width: 10rem"></Column>
-        <Column header="Image">
-          <template #body="slotProps">
-            <img :src="slotProps.data.image" class="rounded" style="width: 64px; height: 64px" />
-          </template>
-        </Column>
-        <Column field="price" header="Price" sortable style="min-width: 8rem">
-          <template #body="slotProps">
-            {{ formatCurrency(slotProps.data.price) }}
-          </template>
-        </Column>
-
-        <Column field="type" header="Types" sortable style="min-width: 10rem">
-          <template #body="slotProps">
-            {{ slotProps.data.type }}
-          </template>
-        </Column>
-
-        <Column :exportable="false" style="min-width: 12rem">
-          <template #body="slotProps">
-            <!-- <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" /> -->
-            <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteProduct(slotProps.data)" />
-          </template>
-        </Column>
-      </DataTable>
-    </div>
-
-    <Dialog v-model:visible="productDialog" :style="{ width: '450px' }" header="Product Details" :modal="true">
-      <div class="flex flex-col gap-6">
-        <img v-if="product.image" :src="product.image" :alt="product.image" class="block m-auto w-64 h-64 pb-4" />
-        <div>
-          <label for="name_food" class="block font-bold mb-3">Tên món ăn</label>
-          <InputText id="name_food" v-model.trim="product.name_food" required="true" autofocus :invalid="submitted && !product.name_food" fluid />
-          <small v-if="submitted && !product.name_food" class="text-red-500">Name food is required.</small>
-        </div>
-        <div>
-          <label for="type" class="block font-bold mb-3">Loại món ăn</label>
-          <Select id="type" v-model="product.type" :options="typies" optionLabel="label" placeholder="Lựa chọn loại món ăn" fluid></Select>
-        </div>
-
-        <div class="grid grid-cols-12 gap-4">
-          <div class="col-span-6">
-            <label for="price" class="block font-bold mb-3">Price</label>
-            <InputNumber id="price" v-model="product.price" mode="currency" currency="VND" locale="vi-VN" fluid />
-          </div>
-          <div class="col-span-6">
-            <label for="quantity" class="block font-bold mb-3">Quantity</label>
-            <InputNumber id="quantity" v-model="product.quantity" integeronly fluid />
-          </div>
+        <div v-for="n in pageSize" :key="n" class="flex flex-col gap-2 animate-pulse">
+          <div class="w-full aspect-square bg-gray-300 rounded-lg"></div>
+          <div class="h-4 bg-gray-300 rounded w-3/4 mx-auto"></div>
+          <div class="h-4 bg-gray-400 rounded w-1/2 mx-auto"></div>
         </div>
       </div>
 
-      <template #footer>
-        <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
-        <Button label="Save" icon="pi pi-check" @click="saveProduct" />
-      </template>
-    </Dialog>
+      <!-- Empty state -->
+      <div v-else-if="!products.length" class="text-center py-8 text-gray-600 text-lg">
+        Không có sản phẩm nào
+      </div>
 
-    <Dialog v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
-      <div class="flex items-center gap-4">
-        <i class="pi pi-exclamation-triangle !text-3xl" />
-        <span v-if="product"
-          >Are you sure you want to delete <b>{{ product.name_food }}</b
-          >?</span
+      <!-- Grid sản phẩm -->
+      <div
+        v-else
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4"
+      >
+        <button
+          v-for="item in products"
+          :key="item.id"
+          class="flex flex-col gap-2 text-left"
+          @click="goDetail(item)"
         >
+          <div
+            class="w-full aspect-square bg-surface-200 rounded-lg overflow-hidden flex items-center justify-center"
+          >
+            <img
+              :src="item.image_url || item.image"
+              alt="image"
+              class="object-cover w-full h-full"
+            />
+          </div>
+          <div class="text-center text-base md:text-lg font-medium line-clamp-2">
+            {{ item.name || item.name_food }}
+          </div>
+          <div class="text-center text-sm md:text-base font-semibold text_money">
+            {{ formatVND(item.origin_price || item.price) }}
+          </div>
+        </button>
       </div>
-      <template #footer>
-        <Button label="No" icon="pi pi-times" text @click="deleteProductDialog = false" />
-        <Button label="Yes" icon="pi pi-check" @click="deleteProduct" />
-      </template>
-    </Dialog>
 
-    <Dialog v-model:visible="deleteProductsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
-      <div class="flex items-center gap-4">
-        <i class="pi pi-exclamation-triangle !text-3xl" />
-        <span v-if="product">Are you sure you want to delete the selected products?</span>
+      <!-- Load More -->
+      <div class="mt-4 flex justify-center" v-if="!loading && page < totalPages">
+        <Button label="Xem thêm" @click="loadMore" />
       </div>
-      <template #footer>
-        <Button label="No" icon="pi pi-times" text @click="deleteProductsDialog = false" />
-        <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedProducts" />
-      </template>
-    </Dialog>
+    </div>
   </div>
 </template>
+
+<style>
+body,
+html {
+  background-color: #ccb999;
+}
+text_money {
+  background-color: #788176;
+}
+</style>

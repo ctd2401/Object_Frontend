@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { authRouter } from './auth.router';
 import { shiftCalendarRouter } from './shift-calendar.router';
 import { storeRouter } from './store.router';
-import { pagesExampleRouter, pagesNotHaveLayoutRouter, uikitRouter } from './uikit.router';
+import { pagesNotHaveLayoutRouter } from './uikit.router';
 
 import { categoryRouter } from './category.router';
 import { customerRouter } from './customer.router';
@@ -20,9 +20,9 @@ const router = createRouter({
           name: 'dashboard',
           component: () => import('@/views/Dashboard.vue')
         },
-        ...uikitRouter,
+        
         ...storeRouter,
-        ...pagesExampleRouter,
+        
         ...shiftCalendarRouter,
         {
           path: '/banner',
@@ -50,9 +50,9 @@ router.afterEach((to) => {
     .reverse()
     .find((r) => r.meta?.title);
   if (nearestWithTitle) {
-    document.title = `${nearestWithTitle.meta.title} | Sakai Vue`;
+    document.title = `${nearestWithTitle.meta.title} | OBJECT`;
   } else {
-    document.title = 'Sakai Vue';
+    document.title = 'OBJECT';
   }
 });
 

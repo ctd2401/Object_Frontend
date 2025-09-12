@@ -1,18 +1,17 @@
 <script setup>
-import { useLayout } from '@/layout/composables/layout';
-import AppConfigurator from './AppConfigurator.vue';
+import { useLayout } from "@/layout/composables/layout";
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 </script>
 
 <template>
-  <div class="layout-topbar">
+  <div class="layout-topbar body">
     <div class="layout-topbar-logo-container">
       <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
         <i class="pi pi-bars"></i>
       </button>
-      <router-link to="/" class="layout-topbar-logo">
-        <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <router-link to="/" class="layout-topbar-logo" style="gap: 0.75rem">
+        <!-- <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             fill-rule="evenodd"
             clip-rule="evenodd"
@@ -28,52 +27,49 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
               fill="var(--primary-color)"
             />
           </g>
-        </svg>
-
-        <span class="text-primary">SAKAI</span>
+        </svg> -->
+        <!-- <img src="/prod/images/background/Object.jpg" alt="OBJECT" style="height: 2.25rem; width: auto; object-fit: contain; border-radius: 0.25rem;" /> -->
+        <span style="font-weight: 600; letter-spacing: 0.5px; color: #788176"
+          >OBJECT</span
+        >
       </router-link>
     </div>
 
     <div class="layout-topbar-actions">
       <div class="layout-config-menu">
-        <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
-          <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
-        </button>
-        <div class="relative">
-          <button
-            v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
-            type="button"
-            class="layout-topbar-action layout-topbar-action-highlight"
-          >
-            <i class="pi pi-palette"></i>
+        <div flex-col class="flex gap-6">
+          <button>
+            <a href="https://www.tiktok.com/@ob.jct" target="blank">
+              <img
+                src="/prod/images/icons/tiktok_icon.jpg"
+                alt="Tiktok"
+                class="button-icon"
+              />
+            </a>
           </button>
-          <AppConfigurator />
-        </div>
-      </div>
-
-      <button
-        class="layout-topbar-menu-button layout-topbar-action"
-        v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
-      >
-        <i class="pi pi-ellipsis-v"></i>
-      </button>
-
-      <div class="layout-topbar-menu hidden lg:block">
-        <div class="layout-topbar-menu-content">
-          <button type="button" class="layout-topbar-action">
-            <i class="pi pi-calendar"></i>
-            <span>Calendar</span>
-          </button>
-          <button type="button" class="layout-topbar-action">
-            <i class="pi pi-inbox"></i>
-            <span>Messages</span>
-          </button>
-          <button type="button" class="layout-topbar-action">
-            <i class="pi pi-user"></i>
-            <span>Profile</span>
+          <button>
+            <a href="https://www.instagram.com/ob.jct" target="blank">
+              <img
+                src="/prod/images/icons/insta_icon.jpg"
+                alt="Insta"
+                class="button-icon"
+              />
+            </a>
           </button>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.button-icon {
+  width: 40px;
+  height: 40px;
+  /* filter: brightness(0) invert(1); Makes the icon white */
+  transition: all 0.3s ease;
+}
+.body {
+  background-color: #5e1803; /* Your desired color */
+}
+</style>

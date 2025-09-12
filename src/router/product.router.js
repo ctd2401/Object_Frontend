@@ -5,7 +5,7 @@ export const productRouter = [
     component: () => import('@/views/product/index.vue')
   },
   {
-    path: '/product/:id',
+    path: '/product/:slug',
     name: 'product-detail',
     component: () => import('@/views/product/ProductDetail.vue')
   },
