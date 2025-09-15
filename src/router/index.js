@@ -40,7 +40,12 @@ const router = createRouter({
       ]
     },
     ...authRouter,
-    ...pagesNotHaveLayoutRouter
+    ...pagesNotHaveLayoutRouter,
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: () => import('@/views/pages/NotFound.vue')
+    }
   ]
 });
 

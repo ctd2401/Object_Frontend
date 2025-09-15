@@ -1,10 +1,12 @@
 <script setup>
+import { useCategoryStore } from "@/stores/category";
 import { useProductStore } from "@/stores/product";
 import { useToast } from "primevue/usetoast";
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const useProduct = useProductStore();
+const useCategory = useCategoryStore();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
@@ -15,7 +17,15 @@ const totalPages = ref(1);
 const pageSize = 12;
 const keyword = ref("");
 const loading = ref(false); // trạng thái loading
+const currentCategory = ref("");
 let searchTimer;
+
+// Computed để lấy tên danh mục từ ID
+const categoryName = computed(() => {
+  if (!currentCategory.value) return "";
+  const category = useCategory.typies.find((cat) => cat.id == currentCategory.value);
+  return category ? category.label : currentCategory.value;
+});
 
 const getData = async () => {
   loading.value = true;
@@ -23,12 +33,20 @@ const getData = async () => {
     page: page.value,
     page_size: pageSize,
     keyword: keyword.value.trim(),
+    category: route.query.category || "",
   });
   if (res.success) {
     if (page.value === 1) products.value = res.data || [];
     else products.value = [...products.value, ...(res.data || [])];
     totalPages.value = res?.meta?.total_pages || 1;
   } else {
+    // Kiểm tra nếu là lỗi 404, chuyển đến trang NotFound ngay lập tức
+    if (res.error?.is404 || res.error?.response?.status === 404) {
+      window.location.replace('/404');
+      return;
+    }
+    
+    // Hiển thị toast cho các lỗi khác
     toast.add({
       severity: "error",
       summary: res?.message,
@@ -57,8 +75,17 @@ const loadMore = async () => {
 
 const onSearch = async () => {
   page.value = 1;
-  router.replace({ path: "/product", query: { keyword: keyword.value || undefined } });
+  const query = { keyword: keyword.value || undefined };
+  if (route.query.category) {
+    query.category = route.query.category;
+  }
+  router.replace({ path: "/product", query });
   await getData();
+};
+
+const clearCategoryFilter = () => {
+  currentCategory.value = "";
+  router.push({ path: "/category" });
 };
 
 watch(
@@ -72,7 +99,16 @@ watch(
 );
 
 onMounted(async () => {
-  if (route.query.keyword) keyword.value = String(route.query.keyword);
+  // Nếu có category từ URL, xóa keyword để đảm bảo ô tìm kiếm trống
+  if (route.query.category) {
+    currentCategory.value = String(route.query.category);
+    keyword.value = ""; // Xóa ô tìm kiếm khi chọn danh mục
+    // Load danh sách danh mục để có thể hiển thị tên
+    await useCategory.getCategories({ page: 1, page_size: 100 });
+  } else if (route.query.keyword) {
+    keyword.value = String(route.query.keyword);
+  }
+
   await getData();
 });
 
@@ -87,6 +123,24 @@ onUnmounted(() => {
     class="flex flex-col body"
   >
     <div class="card;background-color:#CCB999">
+      <!-- Hiển thị danh mục hiện tại -->
+      <div
+        v-if="currentCategory"
+        class="mb-4 flex items-center justify-between bg-white/20 rounded-lg p-3"
+      >
+        <div class="flex items-center gap-2">
+          <i class="pi pi-tag text-lg"></i>
+          <span class="text-lg font-medium">Danh mục: {{ categoryName }}</span>
+        </div>
+        <Button
+          label="Xóa bộ lọc"
+          icon="pi pi-times"
+          severity="secondary"
+          size="small"
+          @click="clearCategoryFilter"
+        />
+      </div>
+
       <!-- Ô tìm kiếm -->
       <div class="mb-4 flex gap-2">
         <InputText

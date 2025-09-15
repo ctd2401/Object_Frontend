@@ -3,12 +3,14 @@ import { useCategoryStore } from "@/stores/category";
 import Skeleton from "primevue/skeleton";
 import { useToast } from "primevue/usetoast";
 import { onMounted, onUnmounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 
 onMounted(() => {
   getData();
 });
 
 const useCategory = useCategoryStore();
+const router = useRouter();
 const toast = useToast();
 const categories = ref([]);
 const page = ref(1);
@@ -31,6 +33,13 @@ const getData = async () => {
     else categories.value = [...categories.value, ...list];
     totalPages.value = res?.meta?.total_pages || 1;
   } else {
+    // Kiểm tra nếu là lỗi 404, chuyển đến trang NotFound ngay lập tức
+    if (res.error?.is404 || res.error?.response?.status === 404) {
+      window.location.replace('/404');
+      return;
+    }
+    
+    // Hiển thị toast cho các lỗi khác
     toast.add({
       severity: "error",
       summary: res?.message,
@@ -61,6 +70,10 @@ watch(
     }, 2000);
   }
 );
+
+const goToProducts = (category) => {
+  router.replace({ path: "/product", query: { category: category.id } });
+};
 
 onUnmounted(() => {
   if (searchTimer) clearTimeout(searchTimer);
@@ -108,7 +121,12 @@ onUnmounted(() => {
         v-else
         class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4"
       >
-        <div v-for="item in categories" :key="item.id" class="flex flex-col gap-2">
+        <button 
+          v-for="item in categories" 
+          :key="item.id" 
+          class="flex flex-col gap-2 text-left hover:opacity-80 transition-opacity"
+          @click="goToProducts(item)"
+        >
           <div
             class="w-full aspect-square bg-surface-200 rounded-lg overflow-hidden flex items-center justify-center"
           >
@@ -117,7 +135,7 @@ onUnmounted(() => {
           <div class="text-center text-base md:text-lg font-medium line-clamp-2">
             {{ item.name }}
           </div>
-        </div>
+        </button>
       </div>
 
       <div class="mt-4 flex justify-center" v-if="page < totalPages && !loading">

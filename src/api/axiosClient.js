@@ -30,6 +30,14 @@ apiClient.interceptors.response.use(
     if(error.response?.status === 401){
       console.warn("Yêu cầu không hợp lệ hoặc token đã hết hạn ")
     }
+    
+    // Xử lý response 404 - đánh dấu lỗi để component có thể xử lý
+    if(error.response?.status === 404){
+      console.warn("Resource not found (404)");
+      // Thêm flag để component biết đây là lỗi 404
+      error.is404 = true;
+    }
+    
     console.error("Lỗi từ API:", error.response?.data || error.message);
     return Promise.reject(error);
   }

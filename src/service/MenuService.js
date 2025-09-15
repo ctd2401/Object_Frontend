@@ -7,9 +7,10 @@ export const MenuService = {
   },
   async getProducts(payload = {}) {
     try {
-      const { page = 1, page_size = 12, raw = false, keyword = '' } = payload || {};
+      const { page = 1, page_size = 12, raw = false, keyword = '', category = '' } = payload || {};
       const q = keyword ? `&keyword=${encodeURIComponent(keyword)}` : '';
-      const url = `${API_URL}/product/products?page=${page}&page_size=${page_size}${q}`;
+      const categoryParam = category ? `&category=${encodeURIComponent(category)}` : '';
+      const url = `${API_URL}/product/products?page=${page}&page_size=${page_size}${q}${categoryParam}`;
       const res = await axios.get(url);
       const results = Array.isArray(res?.data?.results) ? res.data.results : res.data;
       if (raw) {
