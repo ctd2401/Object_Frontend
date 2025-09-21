@@ -94,7 +94,7 @@ function checkActiveRoute(item) {
       :target="item.target"
       tabindex="0"
     >
-      <i :class="item.icon" class="layout-menuitem-icon ;color:#5e1803"></i>
+      <i :class="item.icon" class="layout-menuitem-icon"></i>
       <span class="breadcrumb-active">{{ item.label }}</span>
       <i class="pi pi-fw pi-angle-down layout-submenu-toggler" v-if="item.items"></i>
     </a>

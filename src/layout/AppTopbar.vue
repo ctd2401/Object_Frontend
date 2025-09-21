@@ -5,13 +5,14 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 </script>
 
 <template>
-  <div class="layout-topbar body">
-    <div class="layout-topbar-logo-container">
-      <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
-        <i class="pi pi-bars"></i>
-      </button>
-      <router-link to="/" class="layout-topbar-logo" style="gap: 0.75rem">
-        <!-- <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <div>
+    <div class="layout-topbar body">
+      <div class="layout-topbar-logo-container">
+        <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
+          <i class="pi pi-bars"></i>
+        </button>
+        <router-link to="/" class="layout-topbar-logo" style="gap: 0.75rem">
+          <!-- <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             fill-rule="evenodd"
             clip-rule="evenodd"
@@ -28,34 +29,29 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
             />
           </g>
         </svg> -->
-        <!-- <img src="/prod/images/background/Object.jpg" alt="OBJECT" style="height: 2.25rem; width: auto; object-fit: contain; border-radius: 0.25rem;" /> -->
-        <span style="font-weight: 600; letter-spacing: 0.5px; color: #788176"
-          >OBJECT</span
-        >
-      </router-link>
-    </div>
+          <!-- <img src="/prod/images/background/Object.jpg" alt="OBJECT" style="height: 2.25rem; width: auto; object-fit: contain; border-radius: 0.25rem;" /> -->
+          <span class="logo">OBJECT</span>
+        </router-link>
+      </div>
 
-    <div class="layout-topbar-actions">
-      <div class="layout-config-menu">
-        <div flex-col class="flex gap-6">
-          <button>
-            <a href="https://www.tiktok.com/@ob.jct" target="blank">
-              <img
-                src="/prod/images/icons/tiktok_icon.jpg"
-                alt="Tiktok"
-                class="button-icon"
-              />
-            </a>
-          </button>
-          <button>
-            <a href="https://www.instagram.com/ob.jct" target="blank">
-              <img
-                src="/prod/images/icons/insta_icon.jpg"
-                alt="Insta"
-                class="button-icon"
-              />
-            </a>
-          </button>
+      <div class="layout-topbar-actions">
+        <div class="layout-config-menu">
+          <div flex-col class="flex gap-6">
+            <button>
+              <a href="https://www.tiktok.com/@ob.jct" target="blank">
+                <img
+                  src="../img/icons/tiktok_icon.jpg"
+                  alt="Tiktok"
+                  class="button-icon"
+                />
+              </a>
+            </button>
+            <button>
+              <a href="https://www.instagram.com/ob.jct" target="blank">
+                <img src="../img/icons/insta_icon.jpg" alt="Insta" class="button-icon" />
+              </a>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -66,10 +62,16 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 .button-icon {
   width: 40px;
   height: 40px;
-  /* filter: brightness(0) invert(1); Makes the icon white */
   transition: all 0.3s ease;
 }
 .body {
-  background-color: #5e1803; /* Your desired color */
+  background-color: #5e1803;
+  opacity: 0.8;
+}
+.logo {
+  font-family: sloop-script-pro;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #788176;
 }
 </style>

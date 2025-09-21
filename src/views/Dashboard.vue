@@ -1,6 +1,7 @@
 <template>
-  <div class="dashboard-root">
-    <!-- Decorative maple leaves background layer -->
+  <!-- <div class ="dashboard-root">123</div> -->
+  <img src="../img/background/obj_background.jpg" alt="logo" class="fullscreen-image" />
+  <!-- <div class="dashboard-root">
     <div class="leaves-layer">
       <span class="leaf" style="--x: 6%; --y: 12%; --s: 0.9; --rot: 12deg"></span>
       <span class="leaf" style="--x: 22%; --y: 8%; --s: 0.7; --rot: -8deg"></span>
@@ -48,7 +49,7 @@
     <p class="p_style">
       🪵 Tiktok: <a href="https://www.tiktok.com/@ob.jct" class="p_link"> @ob.jct</a>
     </p>
-  </div>
+  </div> -->
 </template>
 
 <script setup>
@@ -59,10 +60,24 @@
 // import StatsWidget from '@/components/dashboard/StatsWidget.vue';
 </script>
 
-<style>
-body,
+<style scoped>
+/* body,
 html {
-  background-color: #ccb999; /* Your desired color */
+  background-image: src= "../img/background/obj_background.jpg";
+  background-size: cover;
+  background-position: center;
+  background-color: #ccb999;
+  min-height: 100vh;
+  margin-bottom: 0;
+  margin-top: -15px;
+  margin-right: -14px;
+  margin-left: -14px;
+} */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background-color: #5e1803;
 }
 .dashboard-root {
   position: relative;
@@ -124,4 +139,13 @@ html {
 }
 /* Apply default background to everything unless overridden */
 /*  */
+.fullscreen-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Ensures the image covers the screen */
+  position: fixed; /* Keeps it fixed in place */
+  top: 0;
+  left: 0;
+  z-index: -1; /* Sends it behind content */
+}
 </style>
