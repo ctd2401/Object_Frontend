@@ -1,6 +1,20 @@
 <template>
   <!-- <div class ="dashboard-root">123</div> -->
-  <img src="../img/background/obj_background.jpg" alt="logo" class="fullscreen-image" />
+  <div class="text-3xl font-semibold text-[#788176] text-center dashboard-wrapper">
+    <p>Chính sách mua hàng</p>
+    <p>Các nàng tham khảo sản phẩm tại trang web, sau đó tư vấn size và mua hàng tại Instagram của shop nhé</p>
+    <p>Hầu hết các đơn hàng đều cọc từ 80% trở lên và không nhận ship COD ạ</p>
+    <p>Bật mí: OBJECT nhận ship COD đối với hàng có sẵn nha</p>
+    <p>
+      Hàng sẽ về sau 3 tuần ạ (nếu có sự thay đổi OBJECT sẽ báo lại nhaa), ngoài ra, mỗi đơn hàng sau khi lên đơn đều sẽ được gửi mã vận đơn để được
+      theo dõi kĩ hơn nè.
+    </p>
+    <p>Chính sách đổi trả</p>
+    <p>
+      OBJECT hiện KHÔNG đổi trả dưới mọi hình thức, tuy nhiên, trong trường hợp bị mất hàng do lỗi vận chuyển, OBJECT sẽ chịu trách nhiệm đền bù thiệt
+      hại hoặc refund 100% nha
+    </p>
+  </div>
   <!-- <div class="dashboard-root">
     <div class="leaves-layer">
       <span class="leaf" style="--x: 6%; --y: 12%; --s: 0.9; --rot: 12deg"></span>
@@ -52,33 +66,13 @@
   </div> -->
 </template>
 
-<script setup>
-// import BestSellingWidget from '@/components/dashboard/BestSellingWidget.vue';
-// import NotificationsWidget from '@/components/dashboard/NotificationsWidget.vue';
-// import RecentSalesWidget from '@/components/dashboard/RecentSalesWidget.vue';
-// import RevenueStreamWidget from '@/components/dashboard/RevenueStreamWidget.vue';
-// import StatsWidget from '@/components/dashboard/StatsWidget.vue';
-</script>
-
 <style scoped>
-/* body,
-html {
-  background-image: src= "../img/background/obj_background.jpg";
-  background-size: cover;
-  background-position: center;
-  background-color: #ccb999;
-  min-height: 100vh;
-  margin-bottom: 0;
-  margin-top: -15px;
-  margin-right: -14px;
-  margin-left: -14px;
-} */
-html,
+/* html,
 body {
   height: 100%;
   margin: 0;
   background-color: #5e1803;
-}
+} */
 .dashboard-root {
   position: relative;
   min-height: calc(100vh - var(--layout-header-height));
@@ -108,19 +102,19 @@ body {
 
 /* subtle repeating background to ensure visibility across the whole area */
 .dashboard-root::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   opacity: 0.07;
-  background-image: url("https://wineandfood.vn/image/catalog/anh-bai-viet/cac-loai-thuc-pham-khac/siro-cay-la-phong/chiec-la-phong.jpg");
+  background-image: url('https://wineandfood.vn/image/catalog/anh-bai-viet/cac-loai-thuc-pham-khac/siro-cay-la-phong/chiec-la-phong.jpg');
   background-size: 160px 160px;
   background-repeat: repeat;
 }
 .p_style {
   font-size: 40px;
-  font-family: "Playfair Display", serif;
+  font-family: 'Playfair Display', serif;
   margin-bottom: 25px;
   position: relative;
   z-index: 1;
@@ -139,13 +133,15 @@ body {
 }
 /* Apply default background to everything unless overridden */
 /*  */
-.fullscreen-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* Ensures the image covers the screen */
-  position: fixed; /* Keeps it fixed in place */
-  top: 0;
-  left: 0;
-  z-index: -1; /* Sends it behind content */
+
+.dashboard-wrapper {
+  p {
+    padding: 16px 0;
+    /* font-family: monaco, Consolas, monospace; */
+    font-family: alegreya;
+    color: #fff; /* màu chữ */
+    -webkit-text-stroke: 0.1px #5e1803; /* độ dày + màu viền */
+    text-shadow: 0 0 4px #5e1803; /* thêm mờ đỏ quanh chữ */
+  }
 }
 </style>
