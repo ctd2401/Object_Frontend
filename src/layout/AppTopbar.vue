@@ -1,5 +1,5 @@
 <script setup>
-import { useLayout } from '@/layout/composables/layout';
+import { useLayout } from "@/layout/composables/layout";
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 </script>
@@ -39,12 +39,20 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
           <div flex-col class="flex gap-6">
             <button>
               <a href="https://www.tiktok.com/@ob.jct" target="blank">
-                <img src="/src/assets/img/icons/tiktok_icon.jpg" alt="Tiktok" class="button-icon rounded-xl" />
+                <img
+                  src="@/assets/img/icons/tiktok_icon.jpg"
+                  alt="Tiktok"
+                  class="button-icon rounded-xl"
+                />
               </a>
             </button>
             <button>
               <a href="https://www.instagram.com/ob.jct" target="blank">
-                <img src="/src/assets/img/icons/insta_icon.jpg" alt="Insta" class="button-icon rounded-xl" />
+                <img
+                  src="@/assets/img/icons/insta_icon.jpg"
+                  alt="Insta"
+                  class="button-icon rounded-xl"
+                />
               </a>
             </button>
           </div>

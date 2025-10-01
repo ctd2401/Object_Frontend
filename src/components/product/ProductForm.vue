@@ -2,6 +2,9 @@
 import { useCategoryStore } from "@/stores/category";
 import { computed, onMounted, ref, watch } from "vue";
 
+import defaultImageUrl from "@/assets/img/default/obj.jpg";
+
+const defaultImage = defaultImageUrl;
 const props = defineProps({
   modelValue: {
     type: Object,
@@ -170,10 +173,10 @@ const combinedDescription = computed(() => {
           <label for="name" class="text-sm text-surface-500">Tên sản phẩm</label>
           <div>{{ product?.name }}</div>
         </div>
-        <div class="s1 flex flex-col gap-1">
+        <!-- <div class="s1 flex flex-col gap-1">
           <label for="category" class="text-sm text-surface-500">Danh mục</label>
           <div>{{ product?.category }}</div>
-        </div>
+        </div> -->
         <div class="s1 flex flex-col gap-1">
           <label for="description" class="text-sm text-surface-500">Mô tả</label>
           <div class="border rounded-md p-3 bg-surface-0 max-h-[220px] overflow-auto">
@@ -247,9 +250,14 @@ const combinedDescription = computed(() => {
           class="border shadow-md rounded-xl w-full min-h-[260px] flex justify-center items-center p-2 bg-surface-0"
         >
           <img
-            :src="mainImage"
+            :src="mainImage || defaultImage"
             alt="Image"
             class="rounded-xl max-h-[260px] object-contain"
+            @error="
+              (e) => {
+                e.target.src = defaultImage;
+              }
+            "
           />
         </div>
         <div v-if="images.length > 1" class="flex-1 overflow-auto">
@@ -261,7 +269,16 @@ const combinedDescription = computed(() => {
               :class="img === mainImage ? 'ring-2 ring-primary' : ''"
               @click="selectedImage = img"
             >
-              <img :src="img" alt="thumb" class="object-contain max-h-full" />
+              <img
+                :src="img || defaultImage"
+                alt="thumb"
+                class="object-contain max-h-full"
+                @error="
+                  (e) => {
+                    e.target.src = defaultImage;
+                  }
+                "
+              />
             </button>
           </div>
         </div>

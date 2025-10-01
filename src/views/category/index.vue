@@ -5,6 +5,10 @@ import { useToast } from "primevue/usetoast";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import defaultImageUrl from "@/assets/img/default/obj.jpg";
+
+const defaultImage = defaultImageUrl;
+
 onMounted(() => {
   getData();
 });
@@ -35,10 +39,10 @@ const getData = async () => {
   } else {
     // Kiểm tra nếu là lỗi 404, chuyển đến trang NotFound ngay lập tức
     if (res.error?.is404 || res.error?.response?.status === 404) {
-      window.location.replace('/404');
+      window.location.replace("/404");
       return;
     }
-    
+
     // Hiển thị toast cho các lỗi khác
     toast.add({
       severity: "error",
@@ -121,16 +125,25 @@ onUnmounted(() => {
         v-else
         class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4"
       >
-        <button 
-          v-for="item in categories" 
-          :key="item.id" 
+        <button
+          v-for="item in categories"
+          :key="item.id"
           class="flex flex-col gap-2 text-left hover:opacity-80 transition-opacity"
           @click="goToProducts(item)"
         >
           <div
             class="w-full aspect-square bg-surface-200 rounded-lg overflow-hidden flex items-center justify-center"
           >
-            <img :src="item.image_url" alt="image" class="object-cover w-full h-full" />
+            <img
+              :src="item.image_url || defaultImage"
+              alt="image"
+              class="object-cover w-full h-full"
+              @error="
+                (e) => {
+                  e.target.src = defaultImage;
+                }
+              "
+            />
           </div>
           <div class="text-center text-base md:text-lg font-medium line-clamp-2">
             {{ item.name }}

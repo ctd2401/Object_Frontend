@@ -2,17 +2,21 @@
   <!-- <div class ="dashboard-root">123</div> -->
   <div class="text-3xl font-semibold text-[#788176] text-center dashboard-wrapper">
     <p>Chính sách mua hàng</p>
-    <p>Các nàng tham khảo sản phẩm tại trang web, sau đó tư vấn size và mua hàng tại Instagram của shop nhé</p>
+    <p>
+      Các nàng tham khảo sản phẩm tại trang web, sau đó tư vấn size và mua hàng tại
+      Instagram của shop nhé
+    </p>
     <p>Hầu hết các đơn hàng đều cọc từ 80% trở lên và không nhận ship COD ạ</p>
     <p>Bật mí: OBJECT nhận ship COD đối với hàng có sẵn nha</p>
     <p>
-      Hàng sẽ về sau 3 tuần ạ (nếu có sự thay đổi OBJECT sẽ báo lại nhaa), ngoài ra, mỗi đơn hàng sau khi lên đơn đều sẽ được gửi mã vận đơn để được
-      theo dõi kĩ hơn nè.
+      Hàng sẽ về sau 3 tuần ạ (nếu có sự thay đổi OBJECT sẽ báo lại nhaa), ngoài ra, mỗi
+      đơn hàng sau khi lên đơn đều sẽ được gửi mã vận đơn để được theo dõi kĩ hơn nè.
     </p>
     <p>Chính sách đổi trả</p>
     <p>
-      OBJECT hiện KHÔNG đổi trả dưới mọi hình thức, tuy nhiên, trong trường hợp bị mất hàng do lỗi vận chuyển, OBJECT sẽ chịu trách nhiệm đền bù thiệt
-      hại hoặc refund 100% nha
+      OBJECT hiện KHÔNG đổi trả dưới mọi hình thức, tuy nhiên, trong trường hợp bị mất
+      hàng do lỗi vận chuyển, OBJECT sẽ chịu trách nhiệm đền bù thiệt hại hoặc refund 100%
+      nha
     </p>
   </div>
   <!-- <div class="dashboard-root">
@@ -102,19 +106,19 @@ body {
 
 /* subtle repeating background to ensure visibility across the whole area */
 .dashboard-root::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   opacity: 0.07;
-  background-image: url('https://wineandfood.vn/image/catalog/anh-bai-viet/cac-loai-thuc-pham-khac/siro-cay-la-phong/chiec-la-phong.jpg');
+  background-image: url("https://wineandfood.vn/image/catalog/anh-bai-viet/cac-loai-thuc-pham-khac/siro-cay-la-phong/chiec-la-phong.jpg");
   background-size: 160px 160px;
   background-repeat: repeat;
 }
 .p_style {
   font-size: 40px;
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   margin-bottom: 25px;
   position: relative;
   z-index: 1;
@@ -141,7 +145,7 @@ body {
     font-family: alegreya;
     color: #fff; /* màu chữ */
     -webkit-text-stroke: 0.1px #5e1803; /* độ dày + màu viền */
-    text-shadow: 0 0 4px #5e1803; /* thêm mờ đỏ quanh chữ */
+    /* text-shadow: 0 0 4px #5e1803; */
   }
 }
 </style>

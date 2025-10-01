@@ -36,13 +36,13 @@ const isEdit = computed(() => !!(route?.params?.slug || route?.query?.id));
 
 const getData = async () => {
   if (!isEdit.value) return;
-  
+
   loading.value = true;
   is404.value = false;
-  
+
   // Ưu tiên call theo id (query), nếu không có thì fallback sang id suy ra từ slug (server chấp nhận id)
   const payload = route.query.id ? Number(route.query.id) : route.params.slug;
-  
+
   try {
     const res = await useProduct.getDetailProduct(payload);
     if (res.success) {
@@ -54,11 +54,11 @@ const getData = async () => {
         is404.value = true;
         // Delay ngắn để tránh flash content
         setTimeout(() => {
-          window.location.replace('/404');
+          window.location.replace("/404");
         }, 100);
         return;
       }
-      
+
       loading.value = false;
       // Hiển thị toast cho các lỗi khác
       toast.add({
@@ -74,11 +74,11 @@ const getData = async () => {
       is404.value = true;
       // Delay ngắn để tránh flash content
       setTimeout(() => {
-        window.location.replace('/404');
+        window.location.replace("/404");
       }, 100);
       return;
     }
-    
+
     loading.value = false;
     // Hiển thị toast cho các lỗi khác
     toast.add({
