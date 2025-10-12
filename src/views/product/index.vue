@@ -225,7 +225,11 @@ onUnmounted(() => {
 
       <!-- Load More -->
       <div class="mt-4 flex justify-center" v-if="!loading && page < totalPages">
-        <Button label="Xem thêm" @click="loadMore" />
+        <Button
+          label="Xem thêm"
+          :style="{ backgroundColor: '#5e1803', borderColor: '#5e1803' }"
+          @click="loadMore"
+        />
       </div>
     </div>
   </div>

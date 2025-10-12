@@ -29,6 +29,10 @@ const src = ref();
 const file = ref();
 const selectedImage = ref("");
 
+// Image preview modal state
+const showImagePreview = ref(false);
+const previewImageSrc = ref("");
+
 watch(
   () => props.modelValue,
   (newVal) => {
@@ -147,12 +151,24 @@ const combinedDescription = computed(() => {
   if (!parts.length && product.value.description) parts.push(product.value.description);
   return parts.join("\n\n");
 });
+
+// 👉 Image preview functions
+const openImagePreview = (imageSrc) => {
+  previewImageSrc.value = imageSrc || defaultImage;
+  showImagePreview.value = true;
+};
+
+const closeImagePreview = () => {
+  showImagePreview.value = false;
+  previewImageSrc.value = "";
+};
 </script>
 
 <template>
-  <div class="grid grid-cols-10 gap-4 back_gr">
-    <div class="card col-span-7 !mb-0">
-      <div class="flex flex-col gap-4 w-full">
+  <div class="back_gr">
+    <div class="card !mb-0">
+      <div class="flex flex-col gap-6 w-full">
+        <!-- Thông tin sản phẩm -->
         <div class="flex items-center justify-between">
           <div :class="['s1 flex items-center gap-2 font-medium']">
             <span
@@ -173,10 +189,7 @@ const combinedDescription = computed(() => {
           <label for="name" class="text-sm text-surface-500">Tên sản phẩm</label>
           <div>{{ product?.name }}</div>
         </div>
-        <!-- <div class="s1 flex flex-col gap-1">
-          <label for="category" class="text-sm text-surface-500">Danh mục</label>
-          <div>{{ product?.category }}</div>
-        </div> -->
+
         <div class="s1 flex flex-col gap-1">
           <label for="description" class="text-sm text-surface-500">Mô tả</label>
           <div class="border rounded-md p-3 bg-surface-0 max-h-[220px] overflow-auto">
@@ -238,53 +251,94 @@ const combinedDescription = computed(() => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="card col-span-3 mb-0">
-      <div
-        class="w-full flex flex-col gap-3"
-        :style="{ height: `calc(100vh - var(--layout-header-height))` }"
-      >
-        <div
-          class="border shadow-md rounded-xl w-full min-h-[260px] flex justify-center items-center p-2 bg-surface-0"
-        >
-          <img
-            :src="mainImage || defaultImage"
-            alt="Image"
-            class="rounded-xl max-h-[260px] object-contain"
-            @error="
-              (e) => {
-                e.target.src = defaultImage;
-              }
-            "
-          />
-        </div>
-        <div v-if="images.length > 1" class="flex-1 overflow-auto">
-          <div class="grid grid-cols-3 gap-2 min-w-full">
-            <button
-              v-for="(img, idx) in images"
-              :key="idx"
-              class="border rounded-lg overflow-hidden aspect-square flex items-center justify-center"
-              :class="img === mainImage ? 'ring-2 ring-primary' : ''"
-              @click="selectedImage = img"
-            >
-              <img
-                :src="img || defaultImage"
-                alt="thumb"
-                class="object-contain max-h-full"
-                @error="
-                  (e) => {
-                    e.target.src = defaultImage;
-                  }
-                "
-              />
-            </button>
+        <!-- Phần ảnh sản phẩm -->
+        <div class="border-t border-surface-200 pt-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium">Hình ảnh sản phẩm</h3>
+          </div>
+          <div class="flex flex-col lg:flex-row gap-6">
+            <!-- Ảnh chính -->
+            <div class="flex-1">
+              <div
+                class="border shadow-md rounded-xl w-full min-h-[300px] flex justify-center items-center p-4 bg-surface-0"
+              >
+                <img
+                  :src="mainImage || defaultImage"
+                  alt="Image"
+                  class="rounded-xl max-h-[300px] object-contain cursor-pointer hover:opacity-90 transition-opacity"
+                  @click="openImagePreview(mainImage)"
+                  @error="
+                    (e) => {
+                      e.target.src = defaultImage;
+                    }
+                  "
+                />
+              </div>
+            </div>
+
+            <!-- Thumbnail images -->
+            <div v-if="images.length > 1" class="lg:w-80">
+              <h4 class="text-sm font-medium text-surface-600 mb-3">Ảnh khác</h4>
+              <div
+                class="grid grid-cols-2 lg:grid-cols-1 gap-3 max-h-[300px] overflow-auto"
+              >
+                <button
+                  v-for="(img, idx) in images"
+                  :key="idx"
+                  class="border rounded-lg overflow-hidden aspect-square flex items-center justify-center hover:opacity-90 transition-opacity"
+                  :class="img === mainImage ? 'ring-2 ring-primary' : ''"
+                  @click="selectedImage = img"
+                  @dblclick="openImagePreview(img)"
+                >
+                  <img
+                    :src="img || defaultImage"
+                    alt="thumb"
+                    class="object-contain max-h-full cursor-pointer"
+                    @click="openImagePreview(img)"
+                    @error="
+                      (e) => {
+                        e.target.src = defaultImage;
+                      }
+                    "
+                  />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Image Preview Modal -->
+  <Teleport to="body">
+    <div
+      v-if="showImagePreview"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 translate-y-[30px]"
+      @click="closeImagePreview"
+    >
+      <div
+        class="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center p-4"
+      >
+        <!-- Close button -->
+        <button
+          @click="closeImagePreview"
+          class="absolute top-4 right-4 z-10 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-full w-12 h-12 flex items-center justify-center transition-all duration-200 backdrop-blur-sm"
+        >
+          <i class="pi pi-times text-xl"></i>
+        </button>
+
+        <!-- Preview image -->
+        <img
+          :src="previewImageSrc"
+          alt="Preview"
+          class="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+          @click.stop
+        />
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -306,5 +360,63 @@ text_money {
 }
 back_gr {
   background-color: #ccb999;
+}
+
+/* Image preview modal animations */
+.image-preview-modal {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.image-preview-content {
+  animation: zoomIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Image preview modal animations */
+.image-preview-modal {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.image-preview-content {
+  animation: zoomIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 </style>
